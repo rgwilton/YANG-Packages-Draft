@@ -1,0 +1,19 @@
+These files are the constituent parts to an IETF individual draft that
+can be compiled with xml2rc, and are copyright: R.G.Wilton, Cisco
+Systems, and any other authors listed in draft-rwilton-netmod-yang-packages.xml.
+
+The generated internet draft is subject to the standard IETF draft submission copyright rules:
+
+      "This Internet-Draft is submitted in full conformance with the
+      provisions of BCP 78 and BCP 79.
+      
+      Internet-Drafts are working documents of the Internet Engineering
+      Task Force (IETF). Note that other groups may also distribute
+      working documents as Internet-Drafts. The list of current
+      Internet-Drafts is at http://datatracker.ietf.org/drafts/current.
+
+      Internet-Drafts are draft documents valid for a maximum of six
+      months and may be updated, replaced, or obsoleted by other
+      documents at any time. It is inappropriate to use Internet-
+      Drafts as reference material or to cite them other than as
+      "work in progress.""
