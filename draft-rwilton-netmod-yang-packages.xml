@@ -161,7 +161,7 @@
 	<t>To allow YANG datastore schema to be specified in a more
 	concise way rather than having to list all modules and
 	revisions.  YANG package definitions can be defined in
-	documents that can be referenced by a URI rather than
+	documents that can be referenced by a URL rather than
 	requiring explicit lists of modules to be shared between
 	client and server.  Hence, a YANG package must contain
 	sufficient information to allow a client or server to
@@ -385,13 +385,9 @@
       <t>The name given to a package SHOULD be globally unique, and it
       SHOULD include an appropriate organization prefix in the name,
       equivalent to YANG module naming conventions.</t>
-      <t>Each package MUST define a unique namespace.  It is
-      anticipated that a registry of package namespaces would be
-      managed by IANA.  It is unclear whether specific standard
-      package versions would need to be managed in a similar way.</t>
       <t>Ideally a YANG instance data document defining a particular
       package version would be publically available at one or more
-      URIs.</t>
+      URLs.</t>
     </section>
   </section>
   
@@ -401,8 +397,8 @@
     target="I-D.ietf-netmod-yang-instance-file-format"/> using the
     YANG schema below to define the pacakge data itself.</t>
     <t>The instance data document for each version of a YANG package
-    SHOULD be made available at one of more locations accessible via a
-    URI.  If one of the listed locations defines a definitive
+    SHOULD be made available at one of more locations accessible via
+    URLs.  If one of the listed locations defines a definitive
     reference implementation for the package definition then it MUST
     be listed as the first entry in the list.</t>
       <figure>
