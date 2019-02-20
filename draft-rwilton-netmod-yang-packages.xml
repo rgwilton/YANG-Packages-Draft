@@ -24,7 +24,7 @@
 <?rfc inline="yes"?>
 <?rfc compact="yes"?>
 <?rfc subcompact="no"?>
-<rfc category="std" ipr="trust200902" docName="draft-rwilton-netmod-yang-packages-00">
+<rfc category="std" ipr="trust200902" docName="draft-rwilton-netmod-yang-packages-01">
   <front>
     <title abbrev="YANG Packages">YANG Packages</title>
 
@@ -349,6 +349,25 @@
       if they can avoid NBC patch level changes (i.e. 'M' labelled
       versions).</t>
     </section>
+    <section title="Schema referential completeness">
+      <t>A YANG package may represent a schema that is 'referentially
+      complete', or 'referentially incomplete'.</t>
+      <t>If all import statements in all YANG modules included in the
+      package (either directly, or through imported packages) can be
+      resolved to a module revision defined with the YANG package
+      definition, then the package is classified as referentially
+      complete.  Conversely, if one or more import statements cannot
+      be resolved to a module specified as part of the package
+      definition, then the package is classified as referentially
+      incomplete.</t>
+      <t>A package that represents the exact contents of a datastore
+      schema MUST always be referentially complete.</t>
+      <t>Referentially incomplete packages can be used to group sets
+      of logically related modules together, but without requiring a
+      fixed dependency on all imported 'types' modules, instead
+      leaving the choice of specific revisions of 'types' modules to
+      be resolved when the package definition is used.</t>
+    </section>
     <section title="Submodules packaging considerations">
       <t>As defined in <xref target="RFC7950"/> and
       draft-verdt-netmod-yang-semver (TBD), YANG conformance and
@@ -407,17 +426,19 @@
           <![CDATA[
 module: ietf-yang-package
     +--ro yang-package
-       +--ro name                  yang:yang-identifier
-       +--ro version               yang-sem-ver
-       +--ro revision-date?        yanglib:revision-identifier
-       +--ro location*             inet:uri
-       +--ro description?          string
-       +--ro reference?            string
-       +--ro tag*                  tags:tag
-       +--ro mandatory-feature*    string
+       +--ro name                      yang:yang-identifier
+       +--ro version                   yang-sem-ver
+       +--ro revision-date?            yanglib:revision-identifier
+       +--ro location*                 inet:uri
+       +--ro description?              string
+       +--ro reference?                string
+       +--ro tag*                      tags:tag
+       +--ro referentially-complete?   boolean
+       +--ro mandatory-feature*        string
        +--ro imported-packages* [name version]
        |  +--ro name        yang:yang-identifier
        |  +--ro version     yang-sem-ver
+       |  +--ro deviated?   boolean
        |  +--ro location*   inet:uri
        +--ro module* [name]
        |  +--ro name         yang:yang-identifier
@@ -496,25 +517,26 @@ module: ietf-yang-package
 module: ietf-yang-library-packages
   augment /yanglib:yang-library:
     +--ro package* [name version]
-       +--ro name                 yang:yang-identifier
-       +--ro version              yang-sem-ver
-       +--ro revision-date?       yanglib:revision-identifier
-       +--ro location*            inet:uri
-       +--ro description?         string
-       +--ro reference?           string
-       +--ro tag*                 tags:tag
-       +--ro mandatory-feature*   string
+       +--ro name                      yang:yang-identifier
+       +--ro version                   yang-sem-ver
+       +--ro revision-date?            yanglib:revision-identifier
+       +--ro location*                 inet:uri
+       +--ro description?              string
+       +--ro reference?                string
+       +--ro tag*                      tags:tag
+       +--ro referentially-complete?   boolean
+       +--ro mandatory-feature*        string
        +--ro imported-packages* [name version]
-       |  +--ro name       yang:yang-identifier
-       |  +--ro version    yang-sem-ver
+       |  +--ro name        yang:yang-identifier
+       |  +--ro version     yang-sem-ver
+       |  +--ro deviated?   boolean
        +--ro module-set*
                -> /yanglib:yang-library/module-set/name
   augment /yanglib:yang-library/yanglib:schema:
     +--ro package
        +--ro name?      -> /yanglib:yang-library/package/name
        +--ro version?   leafref
-  augment /yanglib:yang-library/yanglib:module-set/
-                                        yanglib:import-only-module:
+  augment /yanglib:yang-library/yanglib:module-set/yanglib:import-only-module:
     +--ro replaces-revision*   yanglib:revision-identifier
             ]]>
         </artwork>
@@ -538,41 +560,47 @@ module: ietf-yang-package-types
     +---- name       yang:yang-identifier
     +---- version    yang-sem-ver
   grouping yang-pkg-common-leafs
-    +---- revision-date?       yanglib:revision-identifier
-    +---- location*            inet:uri
-    +---- description?         string
-    +---- reference?           string
-    +---- tag*                 tags:tag
-    +---- mandatory-feature*   string
+    +---- revision-date?            yanglib:revision-identifier
+    +---- location*                 inet:uri
+    +---- description?              string
+    +---- reference?                string
+    +---- tag*                      tags:tag
+    +---- referentially-complete?   boolean
+    +---- mandatory-feature*        string
     +---- imported-packages* [name version]
-       +---- name       yang:yang-identifier
-       +---- version    yang-sem-ver
+       +---- name        yang:yang-identifier
+       +---- version     yang-sem-ver
+       +---- deviated?   boolean
   grouping yang-pkg-library-definition
-    +---- name                 yang:yang-identifier
-    +---- version              yang-sem-ver
-    +---- revision-date?       yanglib:revision-identifier
-    +---- location*            inet:uri
-    +---- description?         string
-    +---- reference?           string
-    +---- tag*                 tags:tag
-    +---- mandatory-feature*   string
-    +---- imported-packages* [name version]
-    |  +---- name       yang:yang-identifier
-    |  +---- version    yang-sem-ver
-    +---- module-set*
-            -> /yanglib:yang-library/module-set/name
-  grouping yang-pkg-file-definition
-    +---- name                  yang:yang-identifier
-    +---- version               yang-sem-ver
-    +---- revision-date?        yanglib:revision-identifier
-    +---- location*             inet:uri
-    +---- description?          string
-    +---- reference?            string
-    +---- tag*                  tags:tag
-    +---- mandatory-feature*    string
+    +---- name                      yang:yang-identifier
+    +---- version                   yang-sem-ver
+    +---- revision-date?            yanglib:revision-identifier
+    +---- location*                 inet:uri
+    +---- description?              string
+    +---- reference?                string
+    +---- tag*                      tags:tag
+    +---- referentially-complete?   boolean
+    +---- mandatory-feature*        string
     +---- imported-packages* [name version]
     |  +---- name        yang:yang-identifier
     |  +---- version     yang-sem-ver
+    |  +---- deviated?   boolean
+    +---- module-set*
+            -> /yanglib:yang-library/module-set/name
+  grouping yang-pkg-file-definition
+    +---- name                      yang:yang-identifier
+    +---- version                   yang-sem-ver
+    +---- revision-date?            yanglib:revision-identifier
+    +---- location*                 inet:uri
+    +---- description?              string
+    +---- reference?                string
+    +---- tag*                      tags:tag
+    +---- referentially-complete?   boolean
+    +---- mandatory-feature*        string
+    +---- imported-packages* [name version]
+    |  +---- name        yang:yang-identifier
+    |  +---- version     yang-sem-ver
+    |  +---- deviated?   boolean
     |  +---- location*   inet:uri
     +---- module* [name]
     |  +---- name         yang:yang-identifier
@@ -625,8 +653,7 @@ module ietf-yang-package-types {
   }
   import ietf-module-tags {
     prefix tags;
-    reference
-      "XXX, (draft-ietf-netmod-module-tags-03): YANG Module Tags";
+    reference "XXX, (draft-ietf-netmod-module-tags-03): YANG Module Tags";
   }
 
   organization
@@ -756,6 +783,16 @@ module ietf-yang-package-types {
          Module IETF Tag' registry for IETF standard tags.";
     }
 
+    leaf referentially-complete {
+      type boolean;
+      default true;
+      description
+        "Indicates whether the schema defined by this package is
+         referentially complete.  I.e. all module imports can be
+         resolved to a module explcitly defined in this package or one
+         of the imported packages.";
+    }
+
     leaf-list mandatory-feature {
       type string;
       // TODO - Is there a better type for this?
@@ -786,6 +823,16 @@ module ietf-yang-package-types {
         "XXX";
 
       uses yang-pkg-identification-leafs;
+
+      leaf deviated {
+        type boolean;
+        default true;
+        description
+          "Set to true if any data nodes in this package are modified
+           in a non backwards compatible way, either through the use
+           of deviations, or because one of the modules has been
+           replaced by an earlier module version.";
+      }
     }
   }
 
@@ -1178,45 +1225,8 @@ module ietf-yang-library-packages {
 ]]>
         </artwork>
       </figure>
-    </section>
+    </section>    
     
-    <section anchor="issues" title="Open Questions/Issues">
-      <t>
-	<list style="numbers">
-	  <t>Should the YANG library changes be done as an
-	  augmentation (as per this draft), or is a new version of
-	  YANG library better?</t>
-	  <t>Is it OK for the YANG definition used for package
-	  instance data vs YANG library to differ?  The reason for the
-	  difference is to allow "Module Sets" to be reused,
-	  potentially minimizing duplicate data in YANG library.</t>
-	  <t>Is name sufficient to uniquely identify a package, or
-	  should they also define the equivalent to a namespace?  The
-	  current proposed solution is for the first entry in the
-	  location list to define a canonical location</t>
-	  <t>Is disabling features using deviations sufficient?  There
-	  are some cases where this cannot work, e.g. a deviation
-	  cannot remove an identity.</t>
-	  <t>Should a package (or implementation) be able to remove
-	  modules from a package?  Current thinking is the answer
-	  should be no because it greatly reduces the usefulness of
-	  package conformance.</t>
-	  <t>Should a package include RFC 8199 related metadata?
-	  E.g., does a package contain device or service level YANG
-	  models?  The current proposal is to gain this flexibility by
-	  allowing module tags to be added to package definitions.</t>
-	  <t>Considering version selection, should the YANG library
-	  package definition have a flag to indicate whether a
-	  particular package can be selected by a client?  Probably
-	  the answer here is to defer this issue to a separate version
-	  selection draft that can add a flag via augmentation.</t>
-	  <t>TODO - Once draft-verdt-netmod-yang-semver is published,
-	  add appropriate references to this draft for module level
-	  semantic versioning.</t>
-        </list>
-      </t>
-    </section>
-
     <section anchor="security" title="Security Considerations">
       <t>The YANG modules specified in this document defines a schema
       for data that is accessed by network management protocols such
@@ -1269,6 +1279,15 @@ module ietf-yang-library-packages {
       manage specific package versions.  It is highly desirable to
       have a specific canonical location, under IETF control, where
       the definitive YANG package versions can be obtained from.</t>
+    </section>
+    <section anchor="issues" title="Open Questions/Issues">
+      <t>All issues, along with the draft text, are currently being
+      tracked at
+      https://github.com/rgwilton/YANG-Packages-Draft/issues/</t>
+    </section>
+    <section anchor="acknowledgements" title="Acknowledgements">
+      <t>Feedback helping shape this document has kindly been provided
+      by Andy Bierman, Ladislav Lhotka, and Jason Sterne.</t>
     </section>
   </middle>
   <?rfc needLines="20"?>

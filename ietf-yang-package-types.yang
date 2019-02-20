@@ -147,6 +147,16 @@ module ietf-yang-package-types {
          Module IETF Tag' registry for IETF standard tags.";
     }
 
+    leaf referentially-complete {
+      type boolean;
+      default true;
+      description
+        "Indicates whether the schema defined by this package is
+         referentially complete.  I.e. all module imports can be
+         resolved to a module explcitly defined in this package or one
+         of the imported packages.";
+    }
+
     leaf-list mandatory-feature {
       type string;
       // TODO - Is there a better type for this?
@@ -177,6 +187,16 @@ module ietf-yang-package-types {
         "XXX";
 
       uses yang-pkg-identification-leafs;
+
+      leaf deviated {
+        type boolean;
+        default true;
+        description
+          "Set to true if any data nodes in this package are modified
+           in a non backwards compatible way, either through the use
+           of deviations, or because one of the modules has been
+           replaced by an earlier module version.";
+      }
     }
   }
 
