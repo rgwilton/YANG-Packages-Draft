@@ -148,10 +148,70 @@
       packages may help form part of the solution for versioning at
       the datastore schema level.</t>
     </section>
-    
+    <section anchor="alternatives" title="Possible alternative solutions">
+      <section title="Using module tags">
+      <t>Module tags have been suggested as an alternative solution,
+      and indeed that can address some of the same requirements as
+      YANG packages but not all of them.</t>
+      <t>Module tags can be used to group or organize YANG modules.
+      However, this raises the question of where this tag information
+      is stored.  Module tags either require that the YANG module
+      files themselves are updated with the module tag information
+      (creating another versioning problem), or for the module tag
+      information to be hosted elsewhere, perhaps in a centralize YANG
+      Catalog, or in instance data documents similar to how YANG
+      packages have been defined in this draft.</t>
+      <t>One of the principle aims of YANG packages is to be a
+      versioned object that defines a precise set of YANG modules
+      versions that work together.  Module tags cannot meet this aim
+      without an explosion of module tags definitions (i.e. a separate
+      module tag must be defined for each package version).</t>
+      <t>Module tags cannot support the hierachical scheme to
+      construct YANG schema that is proposed in this draft.</t>
+      </section>
+      <section title="Using YANG library">
+	<t>Another question is whether it is necessary to define new
+	YANG modules to define YANG packages, and whether YANG library
+	could just be reused in an instance data document.  The use of
+	YANG packages is intended to offer several benefits over just
+	using YANG library:
+	<list style="numbers">
+	  <t>Packages allow schema to be built in a hierarchical
+	  fashion.  <xref target="I-D.ietf-netconf-rfc7895bis"/> only
+	  allows one layer of hierarchy (using module sets), and there
+	  can be no conflicts between module revisions in different
+	  module-sets.</t>
+	  <t>Packages can be made available off the box, with a well
+	  defined unique name, avoiding the need for clients to
+	  download, and construct/check the entire YANG schema for
+	  each device, instead they can rely on the named packages.
+	  YANG libraries use of checksums are unique only to the
+	  device that generated them.</t>
+	  <t>Packages are versioned using a semantic versioning
+	  scheme, YANG library does not have a schema level semantic
+	  version number, although this could potentially be added if
+	  required.</t>
+	  <t>For a YANG library instance data document to contain the
+	  necessary information, it needs both YANG library, and
+	  probably also various augmentations (e.g. to include each
+	  module's semantic version number), unless a new version of
+	  YANG library is defined containing this information.  A
+	  module definition for a YANG package could be defined to
+	  contain all of the ncessary information to solve the problem.</t>
+	  <t>YANG library is designed to publish information about the
+	  modules, datastores, and datastore schema used by a server.
+	  It is unclear whether exactly the same information is
+	  required for an offline schema definition, or whether these
+	  definitions might deviate from each other over time.  E.g.,
+	  some thought needs to be given concerning the relationship
+	  between datastores and schema.</t>
+	</list>
+	</t>
+      </section>
+    </section>
     <section anchor="objectives" title="Objectives">
-      <t>The main goals of YANG package definitions include, but
-      are not restricted to:
+      <t>The main goals of YANG package definitions include, but are
+      not restricted to:
       <list style="symbols">
 	<t>To act as a simplified YANG conformance mechanism.  Rather
 	than conformance being performed against a set of individual
@@ -169,6 +229,16 @@
 	package.</t>
         <t>To provide generic packaging related YANG grouping
         definitions for use in other YANG modules, as required.</t>
+	<t>To define a mainly linear versioned history of sets of
+	modules versions that are known to work together.  I.e. to
+	help mitigate the problem were a client must manage devices
+	from multiple vendors, and vendor A implements version 1.0.0
+	of module foo and version 2.0.0 of module bar, and vendor B
+	implements version 2.0.0 of module foo and version 1.0.0 of
+	module bar.  For a client, trying to interoperate with
+	multiple vendors, and many YANG modules, then finding a
+	consistent lowest common denominator set of YANG module
+	versions may be difficult, or impossible.</t>
       </list>
       </t>
       <t>Protocol mechanisms of how clients could negotiate which
@@ -390,15 +460,16 @@
       the submodule in the packages's submodules lists.</t>
     </section>
     <section title="Revision history">
-      <t>TODO - Probably eventually delete this section ...</t>
-      <t>YANG packages do not contain a revision history.  It is
-      anticipated that YANG packages versions may become branched over
-      time and hence maintaining a linear revision history would
-      likely be promlematic and less useful.  Further, if YANG
-      packages versions are managed in a source control system, then
-      additional version meta-data information could be stored in the
-      source control system, which are generally capable of
-      representing a branched revision history.</t>
+      <t>YANG packages do not contain a revision history, because a
+      linear revision history does not work well for a versioning
+      object that supports branching.  In addition, some packages
+      could have frequent revisions, and a long revision history would
+      bloat the package definition.</t>
+      <t>To mitigate this, the package definition includes a
+      'previous-version' leaf that indicates the specific version this
+      package definition is based on.  By recursively examining the
+      'previous-version' leaf of a package definition, a full revision
+      history can be dynamically constructed if required.</t>
     </section>
     <section title="Uniqueness of packages and global registry">
       <t>The name given to a package SHOULD be globally unique, and it
@@ -432,6 +503,7 @@ module: ietf-yang-package
        +--ro location*                 inet:uri
        +--ro description?              string
        +--ro reference?                string
+       +--ro previous-version?         yang-sem-ver
        +--ro tag*                      tags:tag
        +--ro referentially-complete?   boolean
        +--ro mandatory-feature*        string
@@ -523,6 +595,7 @@ module: ietf-yang-library-packages
        +--ro location*                 inet:uri
        +--ro description?              string
        +--ro reference?                string
+       +--ro previous-version?         yang-sem-ver
        +--ro tag*                      tags:tag
        +--ro referentially-complete?   boolean
        +--ro mandatory-feature*        string
@@ -536,7 +609,8 @@ module: ietf-yang-library-packages
     +--ro package
        +--ro name?      -> /yanglib:yang-library/package/name
        +--ro version?   leafref
-  augment /yanglib:yang-library/yanglib:module-set/yanglib:import-only-module:
+  augment /yanglib:yang-library/yanglib:module-set/
+                                          yanglib:import-only-module:
     +--ro replaces-revision*   yanglib:revision-identifier
             ]]>
         </artwork>
@@ -564,6 +638,7 @@ module: ietf-yang-package-types
     +---- location*                 inet:uri
     +---- description?              string
     +---- reference?                string
+    +---- previous-version?         yang-sem-ver
     +---- tag*                      tags:tag
     +---- referentially-complete?   boolean
     +---- mandatory-feature*        string
@@ -578,6 +653,7 @@ module: ietf-yang-package-types
     +---- location*                 inet:uri
     +---- description?              string
     +---- reference?                string
+    +---- previous-version?         yang-sem-ver
     +---- tag*                      tags:tag
     +---- referentially-complete?   boolean
     +---- mandatory-feature*        string
@@ -594,6 +670,7 @@ module: ietf-yang-package-types
     +---- location*                 inet:uri
     +---- description?              string
     +---- reference?                string
+    +---- previous-version?         yang-sem-ver
     +---- tag*                      tags:tag
     +---- referentially-complete?   boolean
     +---- mandatory-feature*        string
@@ -770,6 +847,14 @@ module ietf-yang-package-types {
       type string;
 
       description "Allows for a reference for the package";
+    }
+
+    leaf previous-version {
+      type yang-sem-ver;
+      description
+        "The previous package version that this version has been
+         derived from.  This leaf allows a full version history graph
+         to be constructed if required.";
     }
 
     leaf-list tag {
@@ -1279,6 +1364,7 @@ module ietf-yang-library-packages {
       manage specific package versions.  It is highly desirable to
       have a specific canonical location, under IETF control, where
       the definitive YANG package versions can be obtained from.</t>
+      <t>TODO - Add IANA registrations for YANG modules defined in this draft.</t>
     </section>
     <section anchor="issues" title="Open Questions/Issues">
       <t>All issues, along with the draft text, are currently being
@@ -1363,17 +1449,21 @@ module: ietf-yang-library
     |  |  +--ro schema    -> ../../schema/name
     |  +--ro content-id     string
     |  +--ro pkg:package* [name version]
-    |     +--ro pkg:name                 yang:yang-identifier
-    |     +--ro pkg:version              yang-sem-ver
-    |     +--ro pkg:revision-date?       yanglib:revision-identifier
-    |     +--ro pkg:location*            inet:uri
-    |     +--ro pkg:description?         string
-    |     +--ro pkg:reference?           string
-    |     +--ro pkg:tag*                 tags:tag
-    |     +--ro pkg:mandatory-feature*   string
+    |     +--ro pkg:name                      yang:yang-identifier
+    |     +--ro pkg:version                   yang-sem-ver
+    |     +--ro pkg:revision-date?
+    |     |       yanglib:revision-identifier
+    |     +--ro pkg:location*                 inet:uri
+    |     +--ro pkg:description?              string
+    |     +--ro pkg:reference?                string
+    |     +--ro pkg:previous-version?         yang-sem-ver
+    |     +--ro pkg:tag*                      tags:tag
+    |     +--ro pkg:referentially-complete?   boolean
+    |     +--ro pkg:mandatory-feature*        string
     |     +--ro pkg:imported-packages* [name version]
-    |     |  +--ro pkg:name       yang:yang-identifier
-    |     |  +--ro pkg:version    yang-sem-ver
+    |     |  +--ro pkg:name        yang:yang-identifier
+    |     |  +--ro pkg:version     yang-sem-ver
+    |     |  +--ro pkg:deviated?   boolean
     |     +--ro pkg:module-set*
     |             -> /yanglib:yang-library/module-set/name
     x--ro modules-state

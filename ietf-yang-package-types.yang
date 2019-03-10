@@ -136,6 +136,14 @@ module ietf-yang-package-types {
       description "Allows for a reference for the package";
     }
 
+    leaf previous-version {
+      type yang-sem-ver;
+      description
+        "The previous package version that this version has been
+         derived from.  This leaf allows a full version history graph
+         to be constructed if required.";
+    }
+
     leaf-list tag {
       type tags:tag;
       description
