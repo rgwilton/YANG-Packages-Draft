@@ -13,7 +13,7 @@ module ietf-yang-package-types {
   }
   import ietf-yang-library {
     prefix yanglib;
-    reference "RFC 7895bis: YANG Library";
+    reference "RFC 8525: YANG Library";
   }
   import ietf-module-tags {
     prefix tags;
