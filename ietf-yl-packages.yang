@@ -48,7 +48,7 @@ module ietf-yl-packages {
   // and remove this note.
   // RFC Ed.: replace XXXX with actual RFC number and remove this
   // note.
-  revision 2018-11-26 {
+  revision 2019-09-11 {
     description
       "Initial revision";
     reference
@@ -63,8 +63,8 @@ module ietf-yl-packages {
     description "Add YANG package definitions into YANG library";
     
     list package {
-      config "false";
       key "name version";
+      config "false";
 
       description "Defines the packages available on this server.";
 

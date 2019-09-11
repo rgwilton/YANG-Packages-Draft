@@ -23,7 +23,7 @@ module ietf-yang-package {
      used as the schema for an YANG instance data document specifying
      a YANG package.
 
-     Copyright (c) 2018 IETF Trust and the persons identified as
+     Copyright (c) 2019 IETF Trust and the persons identified as
      authors of the code.  All rights reserved.
 
      Redistribution and use in source and binary forms, with or
@@ -40,7 +40,7 @@ module ietf-yang-package {
   // and remove this note.
   // RFC Ed.: replace XXXX with actual RFC number and remove this
   // note.
-  revision 2018-11-26 {
+  revision 2019-09-11 {
     description
       "Initial revision";
     reference
@@ -52,21 +52,14 @@ module ietf-yang-package {
    * Top-level container
    */
 
-  container packages {
+  container package {
     config false;
     description
-      "Defines YANG packages.
+      "Defines a YANG package.
 
-       Intended to be used to specify YANG packages within an instance
-       data document.";
+       Intended to be used to specify YANG packages within an
+       instance data document.";
 
-    list package {
-      config "false";
-      key "name version";
-
-      description "Defines a YANG package";
-
-      uses pkg-types:yang-pkg-file-definition;
-    }    
+    uses pkg-types:yang-pkg-file-definition;
   }
 }
