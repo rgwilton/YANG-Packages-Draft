@@ -1376,7 +1376,8 @@ module ietf-yang-library-packages {
     </section>
     <section anchor="acknowledgements" title="Acknowledgements">
       <t>Feedback helping shape this document has kindly been provided
-      by Andy Bierman, Ladislav Lhotka, and Jason Sterne.</t>
+      by Andy Bierman, James Cumming, Ladislav Lhotka, and Jason
+      Sterne.</t>
     </section>
   </middle>
   <?rfc needLines="20"?>

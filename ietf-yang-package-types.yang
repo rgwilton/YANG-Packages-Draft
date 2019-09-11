@@ -19,6 +19,11 @@ module ietf-yang-package-types {
     prefix tags;
     reference "XXX, (draft-ietf-netmod-module-tags-03): YANG Module Tags";
   }
+  import ietf-yang-revisions {
+    prefix rev;
+    reference "XXX, (draft-verdt-netmod-yang-module-versioning):
+               Updated YANG Module Revision Handling";
+  }
 
   organization
     "IETF NETMOD (Network Modeling) Working Group";
@@ -51,26 +56,13 @@ module ietf-yang-package-types {
   // and remove this note.
   // RFC Ed.: replace XXXX with actual RFC number and remove this
   // note.
-  revision 2018-11-26 {
+  revision 2019-09-09 {
     description
       "Initial revision";
     reference
-      "RFC XXXX: YANG Schema Versioning.";
+      "RFC XXXX: YANG Packages.";
   }
   
-  /*
-   * Typedefs
-   */
-
-  typedef yang-sem-ver {
-    type string {
-      pattern '\d+[.]\d+[.]\d+[mM]?';
-    }
-    description
-      "Represents a YANG semantic version number.";
-    reference
-      "TODO - Should be defined by YANG versioning types module";
-  }
 
   /*
    * Groupings
@@ -89,11 +81,13 @@ module ietf-yang-package-types {
     }
     
     leaf version {
-      type yang-sem-ver;
+      type rev:revision-label;
       mandatory true;
       description
-        "YANG package version.  Follows YANG semantic versions rules
-         defined in XXX";
+        "Uniquely identies a particular version of a YANG package.
+
+         Follows the definition for revision labels defined in
+         draft-verdt-nemod-yang-module-versioning, section XXX";
     }
   }
 
@@ -101,27 +95,13 @@ module ietf-yang-package-types {
     description
       "Defines definitions common to all YANG package definitions.";
 
-    leaf revision-date {
-      type yanglib:revision-identifier;
+    leaf timestamp {
+      type yang:date-and-time;
 
       description
-        "An optional revision identifier of when this package version
-         was created. This does not need to be unique across all
-         versions of a package.";
-    }
-
-    leaf-list location {
-      type inet:uri;
-      description
-        "Contains a URL that represents where an instance data file
-         for this YANG package can be found.
-
-         This leaf will only be present if there is a URL
-         available for retrieval of the schema for this entry.
-
-         If multiple locations are provided, then the first location
-         in the leaf-list MUST be the definitive location that
-         uniquely identifies this package";
+        "An optional timestamp for when this package was created.
+         This does not need to be unique across all versions of a
+         package.";
     }
 
     leaf description {
@@ -136,8 +116,18 @@ module ietf-yang-package-types {
       description "Allows for a reference for the package";
     }
 
+    leaf referentially-complete {
+      type boolean;
+      default true;
+      description
+        "Indicates whether the schema defined by this package is
+         referentially complete.  I.e. all module imports can be
+         resolved to a module explcitly defined in this package or one
+         of the imported packages.";
+    }
+    
     leaf previous-version {
-      type yang-sem-ver;
+      type rev:revision-label;
       description
         "The previous package version that this version has been
          derived from.  This leaf allows a full version history graph
@@ -153,16 +143,6 @@ module ietf-yang-package-types {
          rather than a specific module.  See the IANA 'YANG Module Tag
          Prefix' registry for reserved prefixes and the IANA 'YANG
          Module IETF Tag' registry for IETF standard tags.";
-    }
-
-    leaf referentially-complete {
-      type boolean;
-      default true;
-      description
-        "Indicates whether the schema defined by this package is
-         referentially complete.  I.e. all module imports can be
-         resolved to a module explcitly defined in this package or one
-         of the imported packages.";
     }
 
     leaf-list mandatory-feature {
@@ -196,14 +176,45 @@ module ietf-yang-package-types {
 
       uses yang-pkg-identification-leafs;
 
-      leaf deviated {
+      leaf-list replaces-version {
+        type rev:revision-label;
+        description
+          "Gives the version of an imported package version that
+           is replaced by this package import revision.";
+      }
+
+      leaf modified {
         type boolean;
-        default true;
+        default false;
         description
           "Set to true if any data nodes in this package are modified
            in a non backwards compatible way, either through the use
            of deviations, or because one of the modules has been
            replaced by an earlier module version.";
+      }
+
+      leaf-list location {
+        type inet:uri;
+        description
+          "Contains a URL that represents where an instance data file
+           for this YANG package can be found.
+
+           This leaf will only be present if there is a URL available
+           for retrieval of the schema for this entry.
+
+           If multiple locations are provided, then the first location
+           in the leaf-list MUST be the definitive location that
+           uniquely identifies this package";
+      }
+
+      leaf checksum {
+        type string {
+          length "64..64";
+          pattern "[0-9a-fA-F]*";
+        }
+        description 
+          "The SHA-256 hash calculated on the textual package
+           definition, represented as a hexadecimal string.";
       }
     }
   }
@@ -214,25 +225,7 @@ module ietf-yang-package-types {
 
     uses yang-pkg-identification-leafs;
     
-    uses yang-pkg-common-leafs {
-      augment "imported-packages" {
-        description "Add the package location path";
-
-        leaf-list location {
-          type inet:uri;
-          description
-            "Contains a URL that represents where an instance data
-             file for this YANG package can be found.
-
-             This leaf will only be present if there is a URL
-             available for retrieval of the schema for this entry.
-
-             If multiple locations are provided, then the first
-             location in the leaf-list MUST be the definitive location
-             that uniquely identifies this package";
-        }
-      }
-    }
+    uses yang-pkg-common-leafs;
 
     list module {
       key "name";
@@ -247,14 +240,20 @@ module ietf-yang-package-types {
       reference
         "RFC 7950: The YANG 1.1 Data Modeling Language.";
 
-      uses yanglib:module-identification-leafs;
-
-      leaf version {
-        type yang-sem-ver;
+      leaf name {
+        type yang:yang-identifier;
+        mandatory true;
         description
-          "The YANG module or submodule version.  If no version
-           statement is present in the YANG module or submodule, this
-           leaf is not instantiated.";
+          "The YANG module name.";
+      }
+
+      leaf revision {
+        type rev:revision-date-or-label;
+        description
+          "The YANG module revision date or revision-label.
+
+           If no revision statement is present in the YANG module,
+           this leaf is not instantiated.";
       }
 
       leaf namespace {
@@ -263,7 +262,18 @@ module ietf-yang-package-types {
         description
           "The XML namespace identifier for this module.";
       }
+
       uses yanglib:location-leaf-list;
+
+      leaf checksum {
+        type string {
+          length "64..64";
+          pattern "[0-9a-fA-F]*";
+        }
+        description 
+          "The SHA-256 hash calculated on the textual module
+           definition, represented as a hexadecimal string.";
+      }
 
       list submodule {
         key "name";
@@ -286,6 +296,16 @@ module ietf-yang-package-types {
         }
 
         uses yanglib:location-leaf-list;
+
+        leaf checksum {
+          type string {
+            length "64..64";
+            pattern "[0-9a-fA-F]*";
+          }
+          description 
+            "The SHA-256 hash calculated on the textual submodule
+             definition, represented as a hexadecimal string.";
+        }
       }
     }
 
@@ -306,25 +326,24 @@ module ietf-yang-package-types {
         description
           "The YANG module name.";
       }
+
       leaf revision {
-        type union {
-          type yanglib:revision-identifier;
-          type string {
-            length 0;
-          }
-        }
+        type rev:revision-date-or-label;
         description
-          "The YANG module revision date.  A zero-length string is
-           used if no revision statement is present in the YANG
-           module.";
+          "The YANG module revision date or revision-label.
+
+           If no revision statement is present in the YANG module,
+           this leaf is not instantiated.";
       }
-      leaf version {
-        type yang-sem-ver;
+
+      leaf-list replaces-revision {
+        type rev:revision-date-or-label;
         description
-          "The YANG module or submodule version.  If no version
-           statement is present in the YANG module or submodule, this
-           leaf is not instantiated.";
+          "Gives the revision of an import-only-module defined in
+           an imported package that is replaced by this
+           import-only-module revision.";
       }
+
       leaf namespace {
         type inet:uri;
         mandatory true;
@@ -333,6 +352,16 @@ module ietf-yang-package-types {
       }
 
       uses yanglib:location-leaf-list;
+
+      leaf checksum {
+        type string {
+          length "64..64";
+          pattern "[0-9a-fA-F]*";
+        }
+        description 
+          "The SHA-256 hash calculated on the textual submodule
+           definition, represented as a hexadecimal string.";
+        }
 
       list submodule {
         key "name";
@@ -355,14 +384,16 @@ module ietf-yang-package-types {
         }
 
         uses yanglib:location-leaf-list;
-      }
 
-      leaf-list replaces-revision {
-        type yanglib:revision-identifier;
-        description
-          "Gives the revision of an import-only-module defined in
-           an imported package that is replaced by this
-           import-only-module revision.";
+        leaf checksum {
+          type string {
+            length "64..64";
+            pattern "[0-9a-fA-F]*";
+          }
+          description 
+            "The SHA-256 hash calculated on the textual submodule
+             definition, represented as a hexadecimal string.";
+        }
       }
     }
   }
@@ -385,6 +416,30 @@ module ietf-yang-package-types {
          If a non import-only module appears in multiple module sets,
          then the module revision and the associated features and
          deviations must be identical.";
+    }
+
+    leaf-list location {
+      type inet:uri;
+      description
+        "Contains a URL that represents where an instance data file
+         for this YANG package can be found.
+
+         This leaf will only be present if there is a URL
+         available for retrieval of the schema for this entry.
+
+         If multiple locations are provided, then the first location
+         in the leaf-list MUST be the definitive location that
+         uniquely identifies this package";
+    }
+
+    leaf checksum {
+      type string {
+        length "64..64";
+        pattern "[0-9a-fA-F]*";
+      }
+      description 
+        "The SHA-256 hash calculated on the textual package
+         definition, represented as a hexadecimal string.";
     }
   } 
 }

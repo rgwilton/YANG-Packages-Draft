@@ -1,7 +1,6 @@
-module ietf-yang-library-packages {
+module ietf-yl-packages {
   yang-version 1.1;
-  namespace
-    "urn:ietf:params:xml:ns:yang:ietf-yang-library-packages";
+  namespace "urn:ietf:params:xml:ns:yang:ietf-yl-packages";
   prefix pkg;
 
   import ietf-yang-package-types {
@@ -11,6 +10,11 @@ module ietf-yang-library-packages {
   import ietf-yang-library {
     prefix yanglib;
     reference "RFC 7895bis: YANG Library";
+  }
+  import ietf-yang-revisions {
+    prefix rev;
+    reference "XXX, (draft-verdt-netmod-yang-module-versioning):
+               Updated YANG Module Revision Handling";
   }
 
   organization
@@ -53,7 +57,7 @@ module ietf-yang-library-packages {
 
 
   /*
-   * Add in the list of packaged into YANG libary.
+   * Add the list of packages into YANG libary.
    */
   augment "/yanglib:yang-library" {
     description "Add YANG package definitions into YANG library";
@@ -112,7 +116,7 @@ module ietf-yang-library-packages {
       "Add replaces-revision to import-only-module definitions";
 
     leaf-list replaces-revision {
-      type yanglib:revision-identifier;
+      type rev:revision-date-or-label;
       description
         "Gives the revision of an import-only-module defined in an
          imported package that is replaced by this import-only-module

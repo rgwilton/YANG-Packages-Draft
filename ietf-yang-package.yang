@@ -52,14 +52,21 @@ module ietf-yang-package {
    * Top-level container
    */
 
-  container yang-package {
+  container packages {
     config false;
     description
-      "Defines a YANG package.
+      "Defines YANG packages.
 
-       Intended to be used to specify a YANG package as an instance
+       Intended to be used to specify YANG packages within an instance
        data document.";
 
-    uses pkg-types:yang-pkg-file-definition;
+    list package {
+      config "false";
+      key "name version";
+
+      description "Defines a YANG package";
+
+      uses pkg-types:yang-pkg-file-definition;
+    }    
   }
 }
