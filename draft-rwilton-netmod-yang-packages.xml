@@ -145,7 +145,7 @@
       versioning requirements, <xref
       target="I-D.verdt-netmod-yang-versioning-reqs"/>.  Solutions to
       the versioning requirements can be split into several distinct
-      areas.  <xref target="I-D.verdt-netmod-module-versioning"/> has
+      areas.  <xref target="I-D.verdt-netmod-yang-module-versioning"/> has
       a focus on YANG versioning scoped to individual modules.  But
       the overall solution must also consider YANG versioning and
       conformance scoped to a server's datastore schema.  YANG
@@ -245,7 +245,7 @@
       <t>Protocol mechanisms of how clients can negotiate which
       packages or package versions are be used for NETCONF/RESTCONF
       communications are outside the scope of this document, and are defined in  <xref
-      target="I-D.wilton-netmod-yang-ver-selection-00"/>.</t>
+      target="I-D.wilton-netmod-yang-ver-selection"/>.</t>
 
       <t>Finally, the package definitions proposed by this document
       are intended to be relatively basic in their definition and the
@@ -325,7 +325,7 @@
     <section anchor="versioning" title="Package versioning">
       <t>Individual revisions of a YANG packages are versioned using
       the "revision-label" scheme defined in section 3.3 of <xref
-      target="I-D.verdt-netmod-module-versioning"/>.</t>
+      target="I-D.verdt-netmod-yang-module-versioning"/>.</t>
       
       <section anchor="semantic_versioning" title="Semantic versioning">
 	<t>YANG semantic version numbers, XXX ref, MAY be used as an
@@ -1465,6 +1465,9 @@ module ietf-yl-packages {
       <?rfc include="reference.RFC.8174"?>
       <?rfc include="reference.RFC.8342"?>
       <?rfc include="reference.I-D.verdt-netmod-yang-versioning-reqs"?>
+      <?rfc include="reference.I-D.verdt-netmod-yang-module-versioning"?>
+      <?rfc include="reference.I-D.wilton-netmod-yang-ver-selection"?>
+      <?rfc include="reference.I-D.verdt-netmod-yang-solutions"?>
       <?rfc include="reference.I-D.ietf-netconf-rfc7895bis"?>
       <?rfc include="reference.I-D.ietf-netmod-yang-instance-file-format"?>     
       <?rfc include="reference.I-D.ietf-netmod-module-tags"?>
