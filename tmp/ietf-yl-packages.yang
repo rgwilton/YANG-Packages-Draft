@@ -109,7 +109,7 @@ module ietf-yl-packages {
             convenience to clients to avoid having to query the full
             YANG library information.
 
-            Features are identified using
+            Features are identified using 
             '<module-name>:<feature-name>'";
        }
        
@@ -119,43 +119,17 @@ module ietf-yl-packages {
     }
   }
 
-  augment
-    "/yanglib:yang-library/yanglib:module-set/yanglib:module" {
-
-    description
-      "Add 'checksum' to implemented module definitions.";
-
-    leaf checksum {
-      type pkg-types:sha-256-hash;
-      description 
-        "The SHA-256 hash calculated on the textual module
-         definition, represented as a hexadecimal string.";
-    }
-  }
-
-  augment
-    "/yanglib:yang-library/yanglib:module-set/" +
-    "yanglib:module/yanglib:submodule" {
-
-    description
-      "Add 'checksum' to implemented modules' submodule 
-       definitions.";
-
-    leaf checksum {
-      type pkg-types:sha-256-hash;
-      description 
-        "The SHA-256 hash calculated on the textual submodule
-         definition, represented as a hexadecimal string.";
-    }
-  }
-
+  /*
+   * Allow import-only modules to list the versions that they are
+   * replacing.
+   */
+    
   augment
     "/yanglib:yang-library/yanglib:module-set/" +
     "yanglib:import-only-module" {
 
     description
-      "Add 'replaces-revision' and 'checksum' to import-only-module
-       definitions";
+      "Add replaces-revision to import-only-module definitions";
 
     leaf-list replaces-revision {
       type rev:revision-date-or-label;
@@ -165,29 +139,6 @@ module ietf-yl-packages {
          revision.
 
          Only used for YANG package definitions";
-    }
-
-    leaf checksum {
-      type pkg-types:sha-256-hash;
-      description 
-        "The SHA-256 hash calculated on the textual module
-         definition, represented as a hexadecimal string.";
-    }
-  }
-
-  augment
-    "/yanglib:yang-library/yanglib:module-set/" +
-    "yanglib:import-only-module/yanglib:submodule" {
-
-    description
-      "Add 'checksum' to import-only-modules' submodule
-       definitions.";
-
-    leaf checksum {
-      type pkg-types:sha-256-hash;
-      description 
-        "The SHA-256 hash calculated on the textual submodule
-         definition, represented as a hexadecimal string.";
     }
   }
 }

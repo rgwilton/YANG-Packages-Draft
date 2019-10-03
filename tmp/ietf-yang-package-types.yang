@@ -10,7 +10,6 @@ module ietf-yang-package-types {
 
   import ietf-yang-types {
     prefix yang;
-    rev:revision-or-derived 2013-07-15;
     reference "RFC 6991: Common YANG Data Types.";
   }
 
@@ -22,6 +21,12 @@ module ietf-yang-package-types {
   import ietf-yang-library {
     prefix yanglib;
     reference "RFC 8525: YANG Library";
+  }
+
+  import ietf-module-tags {
+    prefix tags;
+    reference
+      "XXX, (draft-ietf-netmod-module-tags-03): YANG Module Tags";
   }
 
   organization
@@ -84,27 +89,6 @@ module ietf-yang-package-types {
        as defiend by Section 12 or RFC 6020.";
     reference
       "RFC XXXX, YANG Packages.";
-  }
-
-  typedef tag {
-    type string {
-      length "1..max";
-      pattern '[\S ]+';
-    }
-    description
-      "A package tag is a type 'string' value that does not include
-       carriage return, newline or tab characters. It SHOULD begin
-       with a registered prefix; however, tags without a registered
-       prefix SHOULD NOT be treated as invalid.";
-  }
-
-  typedef sha-256-hash {
-    type string {
-      length "64..64";
-      pattern "[0-9a-fA-F]*";
-    }
-    description 
-      "The SHA-256 hash represented as a hexadecimal string.";
   }
 
   /*
@@ -173,21 +157,7 @@ module ietf-yang-package-types {
       description "Allows for a reference for the package";
     }
 
-    leaf-list location {
-      type inet:uri;
-      description
-        "Contains a URL that represents where an instance data file
-         for this YANG package can be found.
-
-         This leaf will only be present if there is a URL
-         available for retrieval of the schema for this entry.
-
-         If multiple locations are provided, then the first location
-         in the leaf-list MUST be the definitive location that
-         uniquely identifies this package";
-    }
-
-    leaf complete {
+    leaf referentially-complete {
       type boolean;
       default true;
       description
@@ -197,7 +167,7 @@ module ietf-yang-package-types {
          one of the imported packages.";
     }
 
-    leaf local {
+    leaf is-local {
       type boolean;
       default false;
       description
@@ -228,7 +198,7 @@ module ietf-yang-package-types {
     }
 
     leaf-list tag {
-      type tag;
+      type tags:tag;
       description
         "Tags associated with a YANG package.  Module tags defined in
          XXX, ietf-netmod-module-tags can be used here but with the
@@ -311,7 +281,10 @@ module ietf-yang-package-types {
       }
 
       leaf checksum {
-        type pkg-types:sha-256-hash;
+        type string {
+          length "64..64";
+          pattern "[0-9a-fA-F]*";
+        }
         description 
           "The SHA-256 hash calculated on the textual package
            definition, represented as a hexadecimal string.";
@@ -366,7 +339,10 @@ module ietf-yang-package-types {
       uses yanglib:location-leaf-list;
 
       leaf checksum {
-        type pkg-types:sha-256-hash;
+        type string {
+          length "64..64";
+          pattern "[0-9a-fA-F]*";
+        }
         description 
           "The SHA-256 hash calculated on the textual module
            definition, represented as a hexadecimal string.";
@@ -395,7 +371,10 @@ module ietf-yang-package-types {
         uses yanglib:location-leaf-list;
 
         leaf checksum {
-          type pkg-types:sha-256-hash;
+          type string {
+            length "64..64";
+            pattern "[0-9a-fA-F]*";
+          }
           description 
             "The SHA-256 hash calculated on the textual submodule
              definition, represented as a hexadecimal string.";
@@ -447,7 +426,10 @@ module ietf-yang-package-types {
       uses yanglib:location-leaf-list;
 
       leaf checksum {
-        type pkg-types:sha-256-hash;
+        type string {
+          length "64..64";
+          pattern "[0-9a-fA-F]*";
+        }
         description 
           "The SHA-256 hash calculated on the textual submodule
            definition, represented as a hexadecimal string.";
@@ -476,7 +458,10 @@ module ietf-yang-package-types {
         uses yanglib:location-leaf-list;
 
         leaf checksum {
-          type pkg-types:sha-256-hash;
+          type string {
+            length "64..64";
+            pattern "[0-9a-fA-F]*";
+          }
           description 
             "The SHA-256 hash calculated on the textual submodule
              definition, represented as a hexadecimal string.";
@@ -506,8 +491,25 @@ module ietf-yang-package-types {
          deviations must be identical.";
     }
 
+    leaf-list location {
+      type inet:uri;
+      description
+        "Contains a URL that represents where an instance data file
+         for this YANG package can be found.
+
+         This leaf will only be present if there is a URL
+         available for retrieval of the schema for this entry.
+
+         If multiple locations are provided, then the first location
+         in the leaf-list MUST be the definitive location that
+         uniquely identifies this package";
+    }
+
     leaf checksum {
-      type pkg-types:sha-256-hash;
+      type string {
+        length "64..64";
+        pattern "[0-9a-fA-F]*";
+      }
       description 
         "The SHA-256 hash calculated on the textual package
          definition, represented as a hexadecimal string.";

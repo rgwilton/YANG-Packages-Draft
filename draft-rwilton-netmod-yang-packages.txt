@@ -4,8 +4,8 @@
 
 Network Working Group                                          R. Wilton
 Internet-Draft                                       Cisco Systems, Inc.
-Intended status: Standards Track                      September 12, 2019
-Expires: March 15, 2020
+Intended status: Standards Track                         October 3, 2019
+Expires: April 5, 2020
 
 
                              YANG Packages
@@ -13,12 +13,12 @@ Expires: March 15, 2020
 
 Abstract
 
-   This document defines YANG packages, an organizational structure
-   holding a set of related YANG modules, that can be used to simplify
-   the conformance and sharing of YANG schema.  It describes how YANG
-   instance data documents are used to define YANG packages, and how the
-   YANG library information published by a server can be augmented with
-   additional packaging related information.
+   This document defines YANG packages, a versioned organizational
+   structure holding a set of related YANG modules, that can be used to
+   simplify the conformance and sharing of YANG schema.  It describes
+   how YANG instance data documents are used to define YANG packages,
+   and how the YANG library information published by a server can be
+   augmented with packaging related information.
 
 Status of This Memo
 
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 15, 2020.
+   This Internet-Draft will expire on April 5, 2020.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Wilton                   Expires March 15, 2020                 [Page 1]
+Wilton                    Expires April 5, 2020                 [Page 1]
 
-Internet-Draft                YANG Packages               September 2019
+Internet-Draft                YANG Packages                 October 2019
 
 
    the Trust Legal Provisions and are provided without warranty as
@@ -63,57 +63,62 @@ Internet-Draft                YANG Packages               September 2019
 
 Table of Contents
 
-   1.  Terminology and Conventions . . . . . . . . . . . . . . . . .   2
-   2.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   1.  Terminology and Conventions . . . . . . . . . . . . . . . . .   3
+   2.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   4
    3.  Background on YANG packaging  . . . . . . . . . . . . . . . .   4
-   4.  Possible alternative solutions  . . . . . . . . . . . . . . .   4
-     4.1.  Using module tags . . . . . . . . . . . . . . . . . . . .   5
-     4.2.  Using YANG library  . . . . . . . . . . . . . . . . . . .   5
-   5.  Objectives  . . . . . . . . . . . . . . . . . . . . . . . . .   6
-   6.  Package description . . . . . . . . . . . . . . . . . . . . .   7
-     6.1.  Package definition rules  . . . . . . . . . . . . . . . .   7
-     6.2.  Package versioning  . . . . . . . . . . . . . . . . . . .   8
-       6.2.1.  Semantic versioning . . . . . . . . . . . . . . . . .   8
-     6.3.  Client server package conformance . . . . . . . . . . . .   9
-     6.4.  Schema referential completeness . . . . . . . . . . . . .  10
-     6.5.  Submodules packaging considerations . . . . . . . . . . .  10
-     6.6.  Revision history  . . . . . . . . . . . . . . . . . . . .  11
-     6.7.  Uniqueness of packages and global registry  . . . . . . .  11
-   7.  YANG Packaging instance data  . . . . . . . . . . . . . . . .  11
-   8.  YANG Packaging additions to YANG library  . . . . . . . . . .  13
-     8.1.  Package List  . . . . . . . . . . . . . . . . . . . . . .  13
-     8.2.  Binding from schema to package  . . . . . . . . . . . . .  13
-     8.3.  Tree diagram  . . . . . . . . . . . . . . . . . . . . . .  14
-   9.  YANG Packaging groupings  . . . . . . . . . . . . . . . . . .  14
-   10. YANG Modules  . . . . . . . . . . . . . . . . . . . . . . . .  17
-   11. Security Considerations . . . . . . . . . . . . . . . . . . .  31
-   12. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  32
-   13. Open Questions/Issues . . . . . . . . . . . . . . . . . . . .  32
-   14. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  32
-   15. References  . . . . . . . . . . . . . . . . . . . . . . . . .  32
-     15.1.  Normative References . . . . . . . . . . . . . . . . . .  32
-     15.2.  Informative References . . . . . . . . . . . . . . . . .  34
+   4.  Objectives  . . . . . . . . . . . . . . . . . . . . . . . . .   5
+   5.  Package description . . . . . . . . . . . . . . . . . . . . .   6
+     5.1.  Package definition rules  . . . . . . . . . . . . . . . .   7
+     5.2.  Package versioning  . . . . . . . . . . . . . . . . . . .   7
+       5.2.1.  Updating a package with a new version . . . . . . . .   8
+         5.2.1.1.  Non-Backwards-compatible changes  . . . . . . . .   8
+         5.2.1.2.  Backwards-compatible changes  . . . . . . . . . .   8
+         5.2.1.3.  Editorial changes . . . . . . . . . . . . . . . .   9
+       5.2.2.  Using YANG Semantic Versioning for Packages . . . . .   9
+     5.3.  Client server package conformance . . . . . . . . . . . .   9
+       5.3.1.  Package Checksums . . . . . . . . . . . . . . . . . .  10
+     5.4.  Schema referential completeness . . . . . . . . . . . . .  11
+     5.5.  Submodules packaging considerations . . . . . . . . . . .  11
+     5.6.  Revision history  . . . . . . . . . . . . . . . . . . . .  11
+     5.7.  Uniqueness of packages and global registry  . . . . . . .  12
+       5.7.1.  Local packages  . . . . . . . . . . . . . . . . . . .  12
+   6.  YANG Packaging instance data  . . . . . . . . . . . . . . . .  12
+   7.  YANG Packaging additions to YANG library  . . . . . . . . . .  14
+     7.1.  Package List  . . . . . . . . . . . . . . . . . . . . . .  14
+     7.2.  Binding from schema to package  . . . . . . . . . . . . .  14
+     7.3.  Tree diagram  . . . . . . . . . . . . . . . . . . . . . .  15
+   8.  YANG Packaging Groupings  . . . . . . . . . . . . . . . . . .  17
+   9.  YANG Modules  . . . . . . . . . . . . . . . . . . . . . . . .  19
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  34
+   11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  35
+   12. Open Questions/Issues . . . . . . . . . . . . . . . . . . . .  36
+   13. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  36
+   14. References  . . . . . . . . . . . . . . . . . . . . . . . . .  36
+     14.1.  Normative References . . . . . . . . . . . . . . . . . .  36
+     14.2.  Informative References . . . . . . . . . . . . . . . . .  38
    Appendix A.  Tree output for ietf-yang-library with package
-                augmentations  . . . . . . . . . . . . . . . . . . .  34
-   Appendix B.  Examples . . . . . . . . . . . . . . . . . . . . . .  36
-     B.1.  Example IETF Network Device YANG package  . . . . . . . .  36
-     B.2.  Example IETF Basic Routing YANG package . . . . . . . . .  39
-     B.3.  Package import conflict resolution example  . . . . . . .  42
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  44
+                augmentations  . . . . . . . . . . . . . . . . . . .  38
+   Appendix B.  Examples . . . . . . . . . . . . . . . . . . . . . .  40
+     B.1.  Example IETF Network Device YANG package  . . . . . . . .  40
+     B.2.  Example IETF Basic Routing YANG package . . . . . . . . .  43
+     B.3.  Package import conflict resolution example  . . . . . . .  46
+   Appendix C.  Possible alternative solutions . . . . . . . . . . .  49
+     C.1.  Using module tags . . . . . . . . . . . . . . . . . . . .  49
+     C.2.  Using YANG library  . . . . . . . . . . . . . . . . . . .  49
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  50
+
+
+
+Wilton                    Expires April 5, 2020                 [Page 2]
+
+Internet-Draft                YANG Packages                 October 2019
+
 
 1.  Terminology and Conventions
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
    "OPTIONAL" in this document are to be interpreted as described in BCP
-
-
-
-Wilton                   Expires March 15, 2020                 [Page 2]
-
-Internet-Draft                YANG Packages               September 2019
-
-
    14 [RFC2119] [RFC8174] when, and only when, they appear in all
    capitals, as shown here.
 
@@ -125,18 +130,45 @@ Internet-Draft                YANG Packages               September 2019
 
    o  datastore schema
 
+   This document also makes of the following terminology introduced in
+   the YANG 1.1 Data Modeling Language [RFC7950]:
+
+   o  data node
+
    In addition, this document makes use of the following terminology:
 
-   o  bc: Used as an abbreviation for a backwards-compatible change.
+   o  YANG schema: A datastore schema, not bound to any particular
+      datastore.
 
-   o  nbc: Used as an abbreviation for a non-backwards-compatible
-      change.
+   o  YANG package: A versioned oraganization structure holding a set of
+      related YANG modules, packages, features, and deviations.  A YANG
+      package collectively define a YANG schema.  YANG packages are
+      defined in Section 5.
 
-   o  editorial change: A backwards-compatible change that does not
-      change the YANG module semantics in any way.
+   o  backwards-compatible (BC) change: When used in the context of a
+      YANG module, it follows the definition in Section 3.1.1 of
+      [I-D.verdt-netmod-yang-module-versioning].  When used in the
+      context of a YANG package, it follows the definition in
+      Section 5.2.1.2.
 
-   Note - the bc/nbc/editorial terminology should probably be defined
-   and referenced from the YANG module versioning solution draft.
+   o  non-backwards-compatible (NBC) change: When used in the context of
+      a YANG module, it follows the definition in Section 3.1.2 of
+      [I-D.verdt-netmod-yang-module-versioning].  When used in the
+      context of a YANG package, it follows the definition in
+      Section 5.2.1.2.
+
+   o  editorial change: When used in the context of a YANG module, it
+      follows the definition in XXX of YANG-Semver.  When used in the
+      context of a YANG package, it follows the definition in
+      Section 5.2.1.3.
+
+
+
+
+Wilton                    Expires April 5, 2020                 [Page 3]
+
+Internet-Draft                YANG Packages                 October 2019
+
 
 2.  Introduction
 
@@ -148,7 +180,7 @@ Internet-Draft                YANG Packages               September 2019
    YANG packages can themselves refer to and reuse other package
    definitions.
 
-   The draft consists of the following significant sections:
+   The document consists of the following significant sections:
 
    A background section that describes some of the prior work in this
    area, both within IETF and the wider industry.
@@ -162,13 +194,6 @@ Internet-Draft                YANG Packages               September 2019
    How YANG instance data documents
    [I-D.ietf-netmod-yang-instance-file-format] are used to define
    particular YANG package instances.
-
-
-
-Wilton                   Expires March 15, 2020                 [Page 3]
-
-Internet-Draft                YANG Packages               September 2019
-
 
    Augmentations to the YANG library [I-D.ietf-netconf-rfc7895bis]
    content published by servers to include YANG packaging related
@@ -190,11 +215,16 @@ Internet-Draft                YANG Packages               September 2019
    statements, where a YANG package is defined in a file similar to how
    YANG modules are defined, and would require enhancements to YANG
    compilers to understand the new statements used to define particular
-   package instances.  This document did not progress in the working
-   group, although this may have been due to other higher priority
-   concerns or resource constraints within the working group rather than
-   due to consideration of the technical merits of the proposed
-   approach.
+   package instances.
+
+
+
+
+
+Wilton                    Expires April 5, 2020                 [Page 4]
+
+Internet-Draft                YANG Packages                 October 2019
+
 
    OpenConfig [openconfigsemver] describes an approach to versioning
    'bundle releases' based on git tags.  I.e. a set of modules, at
@@ -206,95 +236,13 @@ Internet-Draft                YANG Packages               September 2019
    to the YANG versioning requirements,
    [I-D.verdt-netmod-yang-versioning-reqs].  Solutions to the versioning
    requirements can be split into several distinct areas.
-   [I-D.verdt-netmod-yang-module-versioning] has a focus on YANG
-   versioning scoped to individual modules.  But the overall solution
-   must also consider YANG versioning and conformance scoped to a
-   server's datastore schema.  YANG packages help form part of the
-   solution for versioning at the datastore schema level.
+   [I-D.verdt-netmod-yang-module-versioning] is focussed on YANG
+   versioning scoped to individual modules.  The overall solution must
+   also consider YANG versioning and conformance scoped to YANG schema.
+   YANG packages provide part of the solution for versioning YANG
+   schema.
 
-4.  Possible alternative solutions
-
-
-
-
-
-
-
-
-Wilton                   Expires March 15, 2020                 [Page 4]
-
-Internet-Draft                YANG Packages               September 2019
-
-
-4.1.  Using module tags
-
-   Module tags have been suggested as an alternative solution, and
-   indeed that can address some of the same requirements as YANG
-   packages but not all of them.
-
-   Module tags can be used to group or organize YANG modules.  However,
-   this raises the question of where this tag information is stored.
-   Module tags either require that the YANG module files themselves are
-   updated with the module tag information (creating another versioning
-   problem), or for the module tag information to be hosted elsewhere,
-   perhaps in a centralize YANG Catalog, or in instance data documents
-   similar to how YANG packages have been defined in this draft.
-
-   One of the principle aims of YANG packages is to be a versioned
-   object that defines a precise set of YANG modules versions that work
-   together.  Module tags cannot meet this aim without an explosion of
-   module tags definitions (i.e. a separate module tag must be defined
-   for each package version).
-
-   Module tags cannot support the hierachical scheme to construct YANG
-   schema that is proposed in this draft.
-
-4.2.  Using YANG library
-
-   Another question is whether it is necessary to define new YANG
-   modules to define YANG packages, and whether YANG library could just
-   be reused in an instance data document.  The use of YANG packages
-   offers several benefits over just using YANG library:
-
-   1.  Packages allow schema to be built in a hierarchical fashion.
-       [I-D.ietf-netconf-rfc7895bis] only allows one layer of hierarchy
-       (using module sets), and there must be no conflicts between
-       module revisions in different module-sets.
-
-   2.  Packages can be made available off the box, with a well defined
-       unique name, avoiding the need for clients to download, and
-       construct/check the entire YANG schema for each device.  Instead
-       they can rely on the named packages with secure checksums.  YANG
-       library's use of a 'content-id' is unique only to the device that
-       generated them.
-
-   3.  Packages may be versioned using a semantic versioning scheme,
-       YANG library does not provide a schema level semantic version
-       number.
-
-   4.  For a YANG library instance data document to contain the
-       necessary information, it probably needs both YANG library and
-
-
-
-Wilton                   Expires March 15, 2020                 [Page 5]
-
-Internet-Draft                YANG Packages               September 2019
-
-
-       various augmentations (e.g. to include each module's semantic
-       version number), unless a new version of YANG library is defined
-       containing this information.  The module definition for a YANG
-       package is specified to contain all of the ncessary information
-       to solve the problem without augmentations
-
-   5.  YANG library is designed to publish information about the
-       modules, datastores, and datastore schema used by a server.  The
-       information required to construct an off box schema is not
-       precisely the same, and hence the definitions might deviate from
-       each other over time.
-
-5.  Objectives
+4.  Objectives
 
    The main goals of YANG package definitions include, but are not
    restricted to:
@@ -306,8 +254,8 @@ Internet-Draft                YANG Packages               September 2019
       modules, deviations, or features).
 
    o  To allow YANG datastore schema to be specified in a concise way
-      rather than having to list all modules and revisions.  YANG
-      package definitions can be defined in documents that can be
+      rather than having to list all modules, revisions, and features.
+      YANG package definitions can be defined in documents that can be
       referenced by a URL, rather than requiring explicit lists of
       modules to be shared between client and server.  Hence, a YANG
       package must contain sufficient information to allow a client or
@@ -324,20 +272,18 @@ Internet-Draft                YANG Packages               September 2019
       version 2.0.0 of module bar, and vendor B implements version 2.0.0
       of module foo and version 1.0.0 of module bar.  For a client,
       trying to interoperate with multiple vendors, and many YANG
-      modules, then finding a consistent lowest common denominator set
-      of YANG module versions may be difficult, or impossible.
+      modules, finding a consistent lowest common denominator set of
+      YANG module versions may be difficult, or impossible.
+
+
+
+Wilton                    Expires April 5, 2020                 [Page 5]
+
+Internet-Draft                YANG Packages                 October 2019
+
 
    Protocol mechanisms of how clients can negotiate which packages or
    package versions are be used for NETCONF/RESTCONF communications are
-
-
-
-
-Wilton                   Expires March 15, 2020                 [Page 6]
-
-Internet-Draft                YANG Packages               September 2019
-
-
    outside the scope of this document, and are defined in
    [I-D.wilton-netmod-yang-ver-selection].
 
@@ -348,7 +294,7 @@ Internet-Draft                YANG Packages               September 2019
    augmenting, YANG modules could be used to extend the functionality
    supported by YANG packages.
 
-6.  Package description
+5.  Package description
 
    This document specifies an approach to defining YANG packages that is
    different to either of the approaches described in the background.
@@ -373,7 +319,7 @@ Internet-Draft                YANG Packages               September 2019
    [I-D.ietf-netmod-yang-instance-file-format] could also reference a
    YANG packages to specify the schema associated with an instance data
    document.  This could either be defined in instance-file-format
-   draft, or as a YANG augmentation as part of this draft.
+   document, or as a YANG augmentation as part of this draft.
 
    Each version of a YANG package defines: a set of YANG modules that
    are implemented at particular versions or revisions; a set of YANG
@@ -381,18 +327,20 @@ Internet-Draft                YANG Packages               September 2019
    and a set of mandatory module features that implementations of the
    package MUST implement or otherwise deviate.
 
-6.1.  Package definition rules
+
+
+
+
+
+
+Wilton                    Expires April 5, 2020                 [Page 6]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
+5.1.  Package definition rules
 
    The following rules define how packages are defined:
-
-
-
-
-
-Wilton                   Expires March 15, 2020                 [Page 7]
-
-Internet-Draft                YANG Packages               September 2019
-
 
       Every YANG package definition MUST be referentially complete.
       I.e. all import and include statements for all YANG modules
@@ -401,7 +349,7 @@ Internet-Draft                YANG Packages               September 2019
 
       For a given package, each separate instance of the package MUST
       have a unique version number that follows the semantic versioning
-      rules described in Section 6.2.
+      rules described in Section 5.2.
 
       A package MAY have a revision-date.  Any package revision-dates
       MUST be unique for different package versions.
@@ -430,81 +378,139 @@ Internet-Draft                YANG Packages               September 2019
       the module, both in the package definition and within the module
       definition itself.
 
-6.2.  Package versioning
+5.2.  Package versioning
 
    Individual revisions of a YANG packages are versioned using the
    "revision-label" scheme defined in section 3.3 of
    [I-D.verdt-netmod-yang-module-versioning].
 
-6.2.1.  Semantic versioning
-
-   YANG semantic version numbers, XXX ref, MAY be used as an appropriate
-   type of revision-label for the version leaf.
 
 
 
 
 
-Wilton                   Expires March 15, 2020                 [Page 8]
+Wilton                    Expires April 5, 2020                 [Page 7]
 
-Internet-Draft                YANG Packages               September 2019
+Internet-Draft                YANG Packages                 October 2019
 
+
+5.2.1.  Updating a package with a new version
+
+   Package compatibility is fundamentally defined by how the YANG schema
+   between two package versions has changed.
+
+   When a package definition is updated, the version associated with the
+   package MUST be updated appropriately, taking into consideration the
+   scope of the changes as defined by the rules below.
+
+   A package definition SHOULD define the previous version of the
+   package in the 'previous-version' leaf unless it is the initial
+   version of the package.  If the 'previous-version' leaf is provided
+   then the package definition MUST set the 'nbc-change' leaf if the new
+   version is non-backwards-compatible with respect to the package
+   version defined in the 'previous-version' leaf.
+
+5.2.1.1.  Non-Backwards-compatible changes
+
+   Any of the following changes constitute an NBC package version change
+   to the package definition:
+
+      Changing a package import to import a version that is non-
+      backwards-compatible to the prior package version, or removing a
+      previously imported package.
+
+      Changing a module import to import a revision that is non-
+      backwards-compatible to the prior module revision, or removing a
+      previously implemented module.
+
+      Removing a previously supported feature.
+
+      Adding, changing, or removing a deviation that is considered a
+      non-backwards-compatible change to the affected data node in the
+      schema associated with the prior package version.
+
+5.2.1.2.  Backwards-compatible changes
+
+   Any of the following changes constitute an BC package version change
+   to the package definition:
+
+      Changing a package import to import a version that is backwards-
+      compatible to the prior package version, or importing a new
+      package that does not conflict with any existing included package
+      or module.
+
+      Changing a module import to import a revision that is backwards-
+      compatible to the prior module revision, or including a new module
+      to the package definition.
+
+
+
+Wilton                    Expires April 5, 2020                 [Page 8]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
+      Adding a feature to the list of mandatory to support features.
+
+      Adding, changing, or removing a deviation that is considered a
+      backwards-compatible change to the affected data node in the
+      schema associated with the prior package version.
+
+5.2.1.3.  Editorial changes
+
+   Any of the following changes constitute an editorial version change
+   to the package definition:
+
+      Changing a package import to import a version that is classified
+      as an editorial change relative to the prior package version.
+
+      Changing a module import to import a revision that is classified
+      as an editorial change relative to the prior module revision.
+
+      Any change to the metadata associated with a package definition
+      that causes it to have a different checksum value.
+
+5.2.2.  Using YANG Semantic Versioning for Packages
+
+   YANG Semantic Versioning, XXX ref, MAY be used as an appropriate type
+   of revision-label for the package version leaf.
 
    If the format of the leaf matches the type specified in XXX, then the
-   version leaf MUST be interpreted as a YANG semantic version number.
+   package version leaf MUST be interpreted as a YANG semantic version
+   number.
+
+   For YANG packages defined by the IETF, YANG semantic version numbers
+   MUST be used as the version scheme for YANG packages.
 
    The rules for incrementing the YANG package version number are
    equivalent to the semantic versioning rules used to version
    individual YANG modules, defined in section XXX of TBD (draft-verdt-
-   netmod-yang-semver).
+   netmod-yang-semver), but use the rules defined previously in
+   Section 5.2.1 to determine whether a change is classified as non-
+   backwards-compatible, backwards-compatible, or editorial.  Where
+   available, the semantic version number of the referenced elements in
+   the package (imported packages or modules) can be used to help
+   determine the scope of changes being made.
 
-   The following rules classify changes in a package definition as a
-   major, minor, or editorial based on the content that has changed in
-   the package relative to the previous version.  Where available, the
-   semantic version number of the referenced elements in the package
-   (imported packages or modules) can be used to help determine what
-   type of change is being made.  The rules are:
-
-      If any of the referenced elements of the package (imported
-      packages or modules) are changed in an non-backwards-compatible
-      way, or if any imported package, module, or mandatory-feature is
-      removed from the package definition, then the package has been
-      updated in an non-backwards-compatible way.
-
-      If the package has not been updated in a non-backwards-compatible
-      way, but some referenced elements are changed in a backwards-
-      compatible way, or new referenced elements or mandatory-features
-      added, then the package is deemed to be updated in a backwards-
-      compatible way.
-
-      If the package has not been updated in either a backwards-
-      compatible or non-backwards-compatible way, but some referenced
-      elements have editorial changes then the package is deemed to be
-      updated in an editorial way.
-
-   After the type of semantic version change has been identifies, the
-   version number is updated as per the rules specified in section XXX
-   or XXX.
-
-6.3.  Client server package conformance
+5.3.  Client server package conformance
 
    The YANG semantic versioning scheme used for YANG packages means that
    a client can determine the nature of changes between two package
    revisions.
+
+
+
+
+Wilton                    Expires April 5, 2020                 [Page 9]
+
+Internet-Draft                YANG Packages                 October 2019
+
 
    This means that a client is not restricted to working only with
    servers that advertise exactly the same version of package in YANG
    libary.  Instead, reasonable clients should be able to interoperate
    with a server that supports a package version that is backwards
    compatible to what the client is designed for.
-
-
-
-
-Wilton                   Expires March 15, 2020                 [Page 9]
-
-Internet-Draft                YANG Packages               September 2019
-
 
    For example, a client coded to support 'foo' package at version 1.0.0
    should interoperate with a server implementing 'foo' package at
@@ -518,9 +524,45 @@ Internet-Draft                YANG Packages               September 2019
    should generally be sufficient, particular if they can avoid NBC
    patch level changes (i.e.  'M' labelled versions).
 
-   XXX, TODO - describe checksums.
+5.3.1.  Package Checksums
 
-6.4.  Schema referential completeness
+   Each YANG package definition may have a checksum associated with it
+   to allow a client to validate that the package definition of the
+   server matches the expected package definition without downloading
+   the full package definition from the server.
+
+   The checksum for a package is calculated using the SHA-256 hash (XXX,
+   reference) of the full file contents of the YANG package instance
+   data file.  This means that the checksum includes all whitespace and
+   formatting, encoding, and all meta-data fields associated with the
+   package and the instance data document).
+
+   The checksum for a module is calculated using the SHA-256 hash of the
+   YANG module file definition.  This means that the checksum includes
+   all whitespace, formatting, and comments within the YANG module.
+
+   The package definition allows URLs and checksums to be specified for
+   all included packages, modules and submodules within the package
+   definition.  Checksums for imported-packages, modules and sub-modules
+   SHOULD be included in package definitions to validate the full
+   integrity of the package.
+
+   On a server, package checksums SHOULD also be provided for the top
+   level packages associated with the datastore schema.
+
+
+
+
+
+
+
+
+Wilton                    Expires April 5, 2020                [Page 10]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
+5.4.  Schema referential completeness
 
    A YANG package may represent a schema that is 'referentially
    complete', or 'referentially incomplete'.
@@ -542,7 +584,7 @@ Internet-Draft                YANG Packages               September 2019
    choice of specific revisions of 'types' modules to be resolved when
    the package definition is used.
 
-6.5.  Submodules packaging considerations
+5.5.  Submodules packaging considerations
 
    As defined in [RFC7950] and draft-verdt-netmod-yang-semver (TBD),
    YANG conformance and versioning is specified in terms of particular
@@ -553,16 +595,7 @@ Internet-Draft                YANG Packages               September 2019
    submodule definition can be obtained from, allowing a YANG schema to
    be fully constructed from a YANG package instance-data definition.
 
-
-
-
-
-Wilton                   Expires March 15, 2020                [Page 10]
-
-Internet-Draft                YANG Packages               September 2019
-
-
-6.6.  Revision history
+5.6.  Revision history
 
    YANG packages do not contain a revision history, because they may
    have many revisions, and a long revision history would bloat the
@@ -570,18 +603,40 @@ Internet-Draft                YANG Packages               September 2019
    includes a 'previous-version' leaf that indicates the specific
    version this package definition is based on.  By recursively
    examining the 'previous-version' leaf of a package definition, a full
-   revision history can be dynamically constructed if required.
+   revision history (including where non-backwards-compatible changes
+   have occurred) can be dynamically constructed if required, and if all
+   package versions are available.
 
-6.7.  Uniqueness of packages and global registry
 
-   The name given to a package SHOULD be globally unique, and it SHOULD
-   include an appropriate organization prefix in the name, equivalent to
-   YANG module naming conventions.
+
+
+
+
+
+Wilton                    Expires April 5, 2020                [Page 11]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
+5.7.  Uniqueness of packages and global registry
+
+   The name given to a package that is available offline from the server
+   SHOULD be globally unique, and it SHOULD include an appropriate
+   organization prefix in the name, equivalent to YANG module naming
+   conventions.
 
    Ideally a YANG instance data document defining a particular package
    version would be publically available at one or more URLs.
 
-7.  YANG Packaging instance data
+5.7.1.  Local packages
+
+   Package definitions on a server MAY be defined as a local package
+   definition by setting the 'is-local' leaf to true.  This means that
+   the package definitions is local to the device, MAY have a package
+   name that is not unique, and MAY not have a package definition this
+   is available offline from the server.
+
+6.  YANG Packaging instance data
 
    YANG packages are expected to be defined as YANG instance data
    documents [I-D.ietf-netmod-yang-instance-file-format] using the YANG
@@ -596,107 +651,107 @@ Internet-Draft                YANG Packages               September 2019
    implementation for the package definition then it MUST be listed as
    the first entry in the list.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Wilton                   Expires March 15, 2020                [Page 11]
-
-Internet-Draft                YANG Packages               September 2019
-
-
    The "ietf-yang-package" YANG module has the following structure:
 
 
-   module: ietf-yang-package
-     +--ro package
-        +--ro name                      yang:yang-identifier
-        +--ro version                   rev:revision-label
-        +--ro timestamp?                yang:date-and-time
-        +--ro organization?             string
-        +--ro contact?                  string
-        +--ro description?              string
-        +--ro reference?                string
-        +--ro referentially-complete?   boolean
-        +--ro previous-version?         rev:revision-label
-        +--ro tag*                      tags:tag
-        +--ro mandatory-feature*        string
-        +--ro imported-packages* [name version]
-        |  +--ro name                yang:yang-identifier
-        |  +--ro version             rev:revision-label
-        |  +--ro replaces-version*   rev:revision-label
-        |  +--ro modified?           boolean
-        |  +--ro location*           inet:uri
-        |  +--ro checksum?           string
-        +--ro module* [name]
-        |  +--ro name         yang:yang-identifier
-        |  +--ro revision?    rev:revision-date-or-label
-        |  +--ro namespace    inet:uri
-        |  +--ro location*    inet:uri
-        |  +--ro checksum?    string
-        |  +--ro submodule* [name]
-        |     +--ro name        yang:yang-identifier
-        |     +--ro revision    yanglib:revision-identifier
-        |     +--ro location*   inet:uri
-        |     +--ro checksum?   string
-        +--ro import-only-module* [name revision]
-           +--ro name                 yang:yang-identifier
-           +--ro revision             rev:revision-date-or-label
-           +--ro replaces-revision*   rev:revision-date-or-label
-           +--ro namespace            inet:uri
-           +--ro location*            inet:uri
-           +--ro checksum?            string
-           +--ro submodule* [name]
-              +--ro name        yang:yang-identifier
-              +--ro revision    yanglib:revision-identifier
-              +--ro location*   inet:uri
-              +--ro checksum?   string
 
 
 
 
 
-Wilton                   Expires March 15, 2020                [Page 12]
+
+
+
+
+
+
+
+
+
+
+Wilton                    Expires April 5, 2020                [Page 12]
 
-Internet-Draft                YANG Packages               September 2019
+Internet-Draft                YANG Packages                 October 2019
 
 
-8.  YANG Packaging additions to YANG library
+   module: ietf-yang-package
 
-8.1.  Package List
+     structure package:
+       +-- name                      yang:yang-identifier
+       +-- version                   rev:revision-label
+       +-- timestamp?                yang:date-and-time
+       +-- organization?             string
+       +-- contact?                  string
+       +-- description?              string
+       +-- reference?                string
+       +-- referentially-complete?   boolean
+       +-- is-local?                 boolean
+       +-- previous-version?         rev:revision-label
+       +-- nbc-changes?              boolean
+       +-- tag*                      tags:tag
+       +-- supported-feature*        scoped-feature
+       +-- imported-packages* [name version]
+       |  +-- name                yang:yang-identifier
+       |  +-- version             rev:revision-label
+       |  +-- replaces-version*   rev:revision-label
+       |  +-- modified?           boolean
+       |  +-- location*           inet:uri
+       |  +-- checksum?           pkg-types:sha-256-hash
+       +-- module* [name]
+       |  +-- name         yang:yang-identifier
+       |  +-- revision?    rev:revision-date-or-label
+       |  +-- namespace?   inet:uri
+       |  +-- location*    inet:uri
+       |  +-- checksum?    pkg-types:sha-256-hash
+       |  +-- submodule* [name]
+       |     +-- name        yang:yang-identifier
+       |     +-- revision    yanglib:revision-identifier
+       |     +-- location*   inet:uri
+       |     +-- checksum?   pkg-types:sha-256-hash
+       +-- import-only-module* [name revision]
+          +-- name                 yang:yang-identifier
+          +-- revision             rev:revision-date-or-label
+          +-- replaces-revision*   rev:revision-date-or-label
+          +-- namespace?           inet:uri
+          +-- location*            inet:uri
+          +-- checksum?            pkg-types:sha-256-hash
+          +-- submodule* [name]
+             +-- name        yang:yang-identifier
+             +-- revision    yanglib:revision-identifier
+             +-- location*   inet:uri
+             +-- checksum?   pkg-types:sha-256-hash
+
+
+
+
+
+Wilton                    Expires April 5, 2020                [Page 13]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
+7.  YANG Packaging additions to YANG library
+
+7.1.  Package List
 
    The main addition is a top level 'yang-library/package' list that
-   lists all package of all versions known to the server.  Each package
-   itself is defined using imported packages and module-sets to define
-   the specific set of modules implemented and imported by the package.
-   The use of module-sets allows the module definitions to be shared
-   with the existing YANG library schema definitions.  The existing rule
-   of RFC 7995bis related to combining modules-sets also applies here,
-   i.e. The combined set of modules defined by the module-sets MUST NOT
-   contain modules implemented at different revisions.  I.e. the module-
-   sets leaf-list is directly equivalent to the explicit module and
-   import-only-module lists in the instance data YANG package
-   definition.
+   lists all versions of all packages known to the server.  Each package
+   defines a potentially incomplete YANG schema, built from imported
+   packages and module-sets.  The use of module-sets allows the module
+   definitions to be shared with the existing YANG library schema
+   definitions.  The existing rule of RFC 7995bis related to combining
+   modules-sets also applies here, i.e. The combined set of modules
+   defined by the module-sets MUST NOT contain modules implemented at
+   different revisions.  I.e. the module-sets leaf-list is directly
+   equivalent to the explicit module and import-only-module lists in the
+   instance data YANG package definition.
 
    The 'yang-library/package' list MAY include multiple versions of a
    particular package.  E.g. if the server is capable of allowing
    clients to select which package versions should be used by the
    server.
 
-8.2.  Binding from schema to package
+7.2.  Binding from schema to package
 
    The second augmentation is to allow a server to optionally indicate
    that a schema definition directly relates to a package.  Since YANG
@@ -725,15 +780,66 @@ Internet-Draft                YANG Packages               September 2019
 
 
 
-Wilton                   Expires March 15, 2020                [Page 13]
+
+Wilton                    Expires April 5, 2020                [Page 14]
 
-Internet-Draft                YANG Packages               September 2019
+Internet-Draft                YANG Packages                 October 2019
 
 
-8.3.  Tree diagram
+7.3.  Tree diagram
 
    The "ietf-yang-library-packages" YANG module has the following
    structure:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Wilton                    Expires April 5, 2020                [Page 15]
+
+Internet-Draft                YANG Packages                 October 2019
 
 
    module: ietf-yl-packages
@@ -747,30 +853,52 @@ Internet-Draft                YANG Packages               September 2019
           +--ro description?              string
           +--ro reference?                string
           +--ro referentially-complete?   boolean
+          +--ro is-local?                 boolean
           +--ro previous-version?         rev:revision-label
-          +--ro tag*                      tags:tag
-          +--ro mandatory-feature*        string
+          +--ro nbc-changes?              boolean
+          +--ro tag*                      tag
+          +--ro supported-feature*        scoped-feature
           +--ro imported-packages* [name version]
           |  +--ro name                yang:yang-identifier
           |  +--ro version             rev:revision-label
           |  +--ro replaces-version*   rev:revision-label
           |  +--ro modified?           boolean
           |  +--ro location*           inet:uri
-          |  +--ro checksum?           string
+          |  +--ro checksum?           pkg-types:sha-256-hash
           +--ro module-set*
           |       -> /yanglib:yang-library/module-set/name
           +--ro location*                 inet:uri
-          +--ro checksum?                 string
+          +--ro checksum?                 pkg-types:sha-256-hash
      augment /yanglib:yang-library/yanglib:schema:
        +--ro package
-          +--ro name?      -> /yanglib:yang-library/package/name
-          +--ro version?   leafref
+          +--ro name?
+          |       -> /yanglib:yang-library/package/name
+          +--ro version?             leafref
+          +--ro supported-feature*   pkg-types:scoped-feature
+     augment /yanglib:yang-library/yanglib:module-set/yanglib:module:
+       +--ro checksum?   pkg-types:sha-256-hash
+     augment /yanglib:yang-library/yanglib:module-set/yanglib:module
+               /yanglib:submodule:
+       +--ro checksum?   pkg-types:sha-256-hash
      augment /yanglib:yang-library/yanglib:module-set
                /yanglib:import-only-module:
        +--ro replaces-revision*   rev:revision-date-or-label
+       +--ro checksum?            pkg-types:sha-256-hash
+     augment /yanglib:yang-library/yanglib:module-set
+               /yanglib:import-only-module/yanglib:submodule:
+       +--ro checksum?   pkg-types:sha-256-hash
 
 
-9.  YANG Packaging groupings
+
+
+
+
+Wilton                    Expires April 5, 2020                [Page 16]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
+8.  YANG Packaging Groupings
 
    Groupings for YANG packaging related constructs are provided in a
    'types' module for use by the instance-data and YANG library
@@ -778,14 +906,6 @@ Internet-Draft                YANG Packages               September 2019
    by other modules that have a need for packaging information.
 
    The "ietf-yang-package-types" YANG module has the following
-
-
-
-Wilton                   Expires March 15, 2020                [Page 14]
-
-Internet-Draft                YANG Packages               September 2019
-
-
    structure:
 
 
@@ -801,16 +921,18 @@ Internet-Draft                YANG Packages               September 2019
        +-- description?              string
        +-- reference?                string
        +-- referentially-complete?   boolean
+       +-- is-local?                 boolean
        +-- previous-version?         rev:revision-label
-       +-- tag*                      tags:tag
-       +-- mandatory-feature*        string
+       +-- nbc-changes?              boolean
+       +-- tag*                      tag
+       +-- supported-feature*        scoped-feature
        +-- imported-packages* [name version]
           +-- name                yang:yang-identifier
           +-- version             rev:revision-label
           +-- replaces-version*   rev:revision-label
           +-- modified?           boolean
           +-- location*           inet:uri
-          +-- checksum?           string
+          +-- checksum?           pkg-types:sha-256-hash
      grouping yang-pkg-file-definition
        +-- name                      yang:yang-identifier
        +-- version                   rev:revision-label
@@ -820,47 +942,49 @@ Internet-Draft                YANG Packages               September 2019
        +-- description?              string
        +-- reference?                string
        +-- referentially-complete?   boolean
+       +-- is-local?                 boolean
        +-- previous-version?         rev:revision-label
-       +-- tag*                      tags:tag
-       +-- mandatory-feature*        string
+       +-- nbc-changes?              boolean
+       +-- tag*                      tag
+
+
+
+Wilton                    Expires April 5, 2020                [Page 17]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
+       +-- supported-feature*        scoped-feature
        +-- imported-packages* [name version]
        |  +-- name                yang:yang-identifier
        |  +-- version             rev:revision-label
        |  +-- replaces-version*   rev:revision-label
        |  +-- modified?           boolean
        |  +-- location*           inet:uri
-       |  +-- checksum?           string
+       |  +-- checksum?           pkg-types:sha-256-hash
        +-- module* [name]
        |  +-- name         yang:yang-identifier
        |  +-- revision?    rev:revision-date-or-label
-       |  +-- namespace    inet:uri
-
-
-
-Wilton                   Expires March 15, 2020                [Page 15]
-
-Internet-Draft                YANG Packages               September 2019
-
-
+       |  +-- namespace?   inet:uri
        |  +-- location*    inet:uri
-       |  +-- checksum?    string
+       |  +-- checksum?    pkg-types:sha-256-hash
        |  +-- submodule* [name]
        |     +-- name?       yang:yang-identifier
        |     +-- revision    yanglib:revision-identifier
        |     +-- location*   inet:uri
-       |     +-- checksum?   string
+       |     +-- checksum?   pkg-types:sha-256-hash
        +-- import-only-module* [name revision]
           +-- name?                yang:yang-identifier
           +-- revision?            rev:revision-date-or-label
           +-- replaces-revision*   rev:revision-date-or-label
-          +-- namespace            inet:uri
+          +-- namespace?           inet:uri
           +-- location*            inet:uri
-          +-- checksum?            string
+          +-- checksum?            pkg-types:sha-256-hash
           +-- submodule* [name]
              +-- name?       yang:yang-identifier
              +-- revision    yanglib:revision-identifier
              +-- location*   inet:uri
-             +-- checksum?   string
+             +-- checksum?   pkg-types:sha-256-hash
      grouping yang-pkg-library-definition
        +-- name                      yang:yang-identifier
        +-- version                   rev:revision-label
@@ -870,35 +994,33 @@ Internet-Draft                YANG Packages               September 2019
        +-- description?              string
        +-- reference?                string
        +-- referentially-complete?   boolean
+       +-- is-local?                 boolean
        +-- previous-version?         rev:revision-label
-       +-- tag*                      tags:tag
-       +-- mandatory-feature*        string
+       +-- nbc-changes?              boolean
+       +-- tag*                      tag
+       +-- supported-feature*        scoped-feature
        +-- imported-packages* [name version]
        |  +-- name                yang:yang-identifier
        |  +-- version             rev:revision-label
+
+
+
+Wilton                    Expires April 5, 2020                [Page 18]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
        |  +-- replaces-version*   rev:revision-label
        |  +-- modified?           boolean
        |  +-- location*           inet:uri
-       |  +-- checksum?           string
+       |  +-- checksum?           pkg-types:sha-256-hash
        +-- module-set*
        |       -> /yanglib:yang-library/module-set/name
        +-- location*                 inet:uri
-       +-- checksum?                 string
+       +-- checksum?                 pkg-types:sha-256-hash
 
 
-
-
-
-
-
-
-
-Wilton                   Expires March 15, 2020                [Page 16]
-
-Internet-Draft                YANG Packages               September 2019
-
-
-10.  YANG Modules
+9.  YANG Modules
 
    The YANG module definitions for the modules described in the previous
    sections.
@@ -910,28 +1032,39 @@ Internet-Draft                YANG Packages               September 2019
      namespace "urn:ietf:params:xml:ns:yang:ietf-yang-package-types";
      prefix "pkg-types";
 
+     import ietf-yang-revisions {
+       prefix rev;
+       reference "XXXX: Updated YANG Module Revision Handling";
+     }
+
      import ietf-yang-types {
        prefix yang;
        reference "RFC 6991: Common YANG Data Types.";
      }
+
      import ietf-inet-types {
        prefix inet;
        reference "RFC 6991: Common YANG Data Types.";
      }
+
      import ietf-yang-library {
        prefix yanglib;
        reference "RFC 8525: YANG Library";
      }
+
      import ietf-module-tags {
        prefix tags;
        reference
          "XXX, (draft-ietf-netmod-module-tags-03): YANG Module Tags";
      }
-     import ietf-yang-revisions {
-       prefix rev;
-       reference "XXX, (draft-verdt-netmod-yang-module-versioning):
-                  Updated YANG Module Revision Handling";
-     }
+
+
+
+
+Wilton                    Expires April 5, 2020                [Page 19]
+
+Internet-Draft                YANG Packages                 October 2019
+
 
      organization
        "IETF NETMOD (Network Modeling) Working Group";
@@ -946,13 +1079,6 @@ Internet-Draft                YANG Packages               September 2019
      description
        "This module provides type and grouping definitions for YANG
         packages.
-
-
-
-Wilton                   Expires March 15, 2020                [Page 17]
-
-Internet-Draft                YANG Packages               September 2019
-
 
         Copyright (c) 2019 IETF Trust and the persons identified as
         authors of the code.  All rights reserved.
@@ -978,12 +1104,36 @@ Internet-Draft                YANG Packages               September 2019
      // RFC Ed.: replace XXXX with actual RFC number and remove this
      // note.
      revision 2019-09-11 {
+       rev:revision-label 0.1.0;
        description
          "Initial revision";
        reference
          "RFC XXXX: YANG Packages.";
      }
 
+     /*
+      * Typedefs
+      */
+
+
+
+Wilton                    Expires April 5, 2020                [Page 20]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
+     typedef scoped-feature {
+       type string {
+         pattern '[a-zA-Z_][a-zA-Z0-9\-_.]*:[a-zA-Z_][a-zA-Z0-9\-_.]*';
+       }
+       description
+         "Represents a feature name scoped to a particular module,
+          identified as the '<module-name>:<feature-name>', where both
+          <module-name> and <feature-name> are YANG identifier strings,
+          as defiend by Section 12 or RFC 6020.";
+       reference
+         "RFC XXXX, YANG Packages.";
+     }
 
      /*
       * Groupings
@@ -1002,14 +1152,6 @@ Internet-Draft                YANG Packages               September 2019
        }
 
        leaf version {
-
-
-
-Wilton                   Expires March 15, 2020                [Page 18]
-
-Internet-Draft                YANG Packages               September 2019
-
-
          type rev:revision-label;
          mandatory true;
          description
@@ -1028,6 +1170,14 @@ Internet-Draft                YANG Packages               September 2019
          type yang:date-and-time;
 
          description
+
+
+
+Wilton                    Expires April 5, 2020                [Page 21]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
            "An optional timestamp for when this package was created.
             This does not need to be unique across all versions of a
             package.";
@@ -1059,13 +1209,6 @@ Internet-Draft                YANG Packages               September 2019
          description "Allows for a reference for the package";
        }
 
-
-
-Wilton                   Expires March 15, 2020                [Page 19]
-
-Internet-Draft                YANG Packages               September 2019
-
-
        leaf referentially-complete {
          type boolean;
          default true;
@@ -1076,12 +1219,41 @@ Internet-Draft                YANG Packages               September 2019
             one of the imported packages.";
        }
 
+       leaf is-local {
+         type boolean;
+         default false;
+         description
+           "Defines that the package definition is local to the server,
+            and the name of the package MAY not be unique, and the
+            package definition MAY not be available in an offline file.
+
+
+
+Wilton                    Expires April 5, 2020                [Page 22]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
+            Local packages can be used when the schema for the device
+            can be changed at runtime through the addition or removal of
+            software packages, or hot fixes.";
+       }
+
        leaf previous-version {
          type rev:revision-label;
          description
            "The previous package version that this version has been
             derived from.  This leaf allows a full version history graph
             to be constructed if required.";
+       }
+
+       leaf nbc-changes {
+         type boolean;
+         default false;
+         description
+           "Indicates whether the defined package version contains
+            non-backwards-compatible changes relative to the package
+            version defined in the 'previous-version' leaf.";
        }
 
        leaf-list tag {
@@ -1095,36 +1267,46 @@ Internet-Draft                YANG Packages               September 2019
             'YANG Module IETF Tag' registry for IETF standard tags.";
        }
 
-       leaf-list mandatory-feature {
-         type string;
-         // TODO - Is there a better type for this?
+       leaf-list supported-feature {
+         type scoped-feature;
          description
-           "List all features from modules included in the package that
-            MUST be supported by any server implementing the package.
-            All other features defined in included packages are OPTIONAL
-            to implement.
+           "List all features from all modules included in the package
+            (either directly, or via other package imports) that MUST be
+            supported by any server implementing the package.  All other
+            features defined in included modules are OPTIONAL to
+            implement.
 
-            Features are identified using <module-name>:<feature>";
+            Features are identified using <module-name>:<feature-name>";
        }
 
        list imported-packages {
          key "name version";
          description
-           "An entry in this list represents a package that is imported
-            as part of the package definition.
-
-            If packages implement different revisions or versions of the
 
 
 
-Wilton                   Expires March 15, 2020                [Page 20]
+Wilton                    Expires April 5, 2020                [Page 23]
 
-Internet-Draft                YANG Packages               September 2019
+Internet-Draft                YANG Packages                 October 2019
 
 
-            same module, then an explicit entry in the module list MUST
-            be provided to select the specific module version
-            'implemented' by this package definition.
+           "An entry in this list represents a package that is imported
+            as part of the package definition, or an indirectly imported
+            package that is changed in a non backwards compatible way.
+
+            It is also used to excplictly resolve conflicting package
+            imports from imported packages by choosing which
+
+            If imported packages implement different revisions or
+            versions of the same module, then an explicit entry in the
+            module list MUST be provided to select the specific module
+            version 'implemented' by this package definition.
+
+            If the schema for any packages that are imported either
+            directly, or indirectly via another package import are
+            changed in a non-backwards-compatible way then they MUST be
+            explicitly listed in the imported-packages list with the
+            'modified' leaf set to true.
 
             For import-only modules, the replaces-revision leaf-list can
             be used to select the specific module versions imported by
@@ -1157,6 +1339,13 @@ Internet-Draft                YANG Packages               September 2019
              "Contains a URL that represents where an instance data file
               for this YANG package can be found.
 
+
+
+Wilton                    Expires April 5, 2020                [Page 24]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
               This leaf will only be present if there is a URL available
               for retrieval of the schema for this entry.
 
@@ -1170,14 +1359,6 @@ Internet-Draft                YANG Packages               September 2019
              length "64..64";
              pattern "[0-9a-fA-F]*";
            }
-
-
-
-Wilton                   Expires March 15, 2020                [Page 21]
-
-Internet-Draft                YANG Packages               September 2019
-
-
            description
              "The SHA-256 hash calculated on the textual package
               definition, represented as a hexadecimal string.";
@@ -1214,6 +1395,13 @@ Internet-Draft                YANG Packages               September 2019
              "The YANG module name.";
          }
 
+
+
+Wilton                    Expires April 5, 2020                [Page 25]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
          leaf revision {
            type rev:revision-date-or-label;
            description
@@ -1225,15 +1413,6 @@ Internet-Draft                YANG Packages               September 2019
 
          leaf namespace {
            type inet:uri;
-           mandatory true;
-
-
-
-Wilton                   Expires March 15, 2020                [Page 22]
-
-Internet-Draft                YANG Packages               September 2019
-
-
            description
              "The XML namespace identifier for this module.";
          }
@@ -1272,6 +1451,13 @@ Internet-Draft                YANG Packages               September 2019
 
            uses yanglib:location-leaf-list;
 
+
+
+Wilton                    Expires April 5, 2020                [Page 26]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
            leaf checksum {
              type string {
                length "64..64";
@@ -1282,14 +1468,6 @@ Internet-Draft                YANG Packages               September 2019
                 definition, represented as a hexadecimal string.";
            }
          }
-
-
-
-Wilton                   Expires March 15, 2020                [Page 23]
-
-Internet-Draft                YANG Packages               September 2019
-
-
        }
 
        list import-only-module {
@@ -1328,8 +1506,15 @@ Internet-Draft                YANG Packages               September 2019
          }
 
          leaf namespace {
+
+
+
+Wilton                    Expires April 5, 2020                [Page 27]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
            type inet:uri;
-           mandatory true;
            description
              "The XML namespace identifier for this module.";
          }
@@ -1338,14 +1523,6 @@ Internet-Draft                YANG Packages               September 2019
 
          leaf checksum {
            type string {
-
-
-
-Wilton                   Expires March 15, 2020                [Page 24]
-
-Internet-Draft                YANG Packages               September 2019
-
-
              length "64..64";
              pattern "[0-9a-fA-F]*";
            }
@@ -1385,6 +1562,14 @@ Internet-Draft                YANG Packages               September 2019
                "The SHA-256 hash calculated on the textual submodule
                 definition, represented as a hexadecimal string.";
            }
+
+
+
+Wilton                    Expires April 5, 2020                [Page 28]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
          }
        }
      }
@@ -1393,14 +1578,6 @@ Internet-Draft                YANG Packages               September 2019
        description
          "The set of parameters that describe a particular YANG
           package.";
-
-
-
-
-Wilton                   Expires March 15, 2020                [Page 25]
-
-Internet-Draft                YANG Packages               September 2019
-
 
        uses yang-pkg-identification-leafs;
        uses yang-pkg-common-leafs;
@@ -1441,29 +1618,39 @@ Internet-Draft                YANG Packages               September 2019
            "The SHA-256 hash calculated on the textual package
             definition, represented as a hexadecimal string.";
        }
+
+
+
+Wilton                    Expires April 5, 2020                [Page 29]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
      }
    }
    <CODE ENDS>
 
 
 
-   <CODE BEGINS> file "ietf-yang-package2019-09-11.yang"
+   <CODE BEGINS> file "ietf-yang-package@2019-09-11.yang"
    module ietf-yang-package {
      yang-version 1.1;
-
-
-
-Wilton                   Expires March 15, 2020                [Page 26]
-
-Internet-Draft                YANG Packages               September 2019
-
-
      namespace "urn:ietf:params:xml:ns:yang:ietf-yang-package";
      prefix pkg;
+
+     import ietf-yang-revisions {
+       prefix rev;
+       reference "XXXX: Updated YANG Module Revision Handling";
+     }
 
      import ietf-yang-package-types {
        prefix pkg-types;
        reference "RFC XXX: YANG Schema Versioning.";
+     }
+
+     import ietf-yang-structure-ext {
+       prefix sx;
+       reference "RFC XXX: YANG Data Structure Exensions.";
      }
 
      organization
@@ -1487,6 +1674,14 @@ Internet-Draft                YANG Packages               September 2019
         Redistribution and use in source and binary forms, with or
         without modification, is permitted pursuant to, and subject
         to the license terms contained in, the Simplified BSD License
+
+
+
+Wilton                    Expires April 5, 2020                [Page 30]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
         set forth in Section 4.c of the IETF Trust's Legal Provisions
         Relating to IETF Documents
         (http://trustee.ietf.org/license-info).
@@ -1499,6 +1694,7 @@ Internet-Draft                YANG Packages               September 2019
      // RFC Ed.: replace XXXX with actual RFC number and remove this
      // note.
      revision 2019-09-11 {
+       rev:revision-label 0.1.0;
        description
          "Initial revision";
        reference
@@ -1506,20 +1702,11 @@ Internet-Draft                YANG Packages               September 2019
      }
 
 
-
-
-
-Wilton                   Expires March 15, 2020                [Page 27]
-
-Internet-Draft                YANG Packages               September 2019
-
-
      /*
-      * Top-level container
+      * Top-level structure
       */
 
-     container package {
-       config false;
+     sx:structure package {
        description
          "Defines a YANG package.
 
@@ -1539,18 +1726,26 @@ Internet-Draft                YANG Packages               September 2019
      namespace "urn:ietf:params:xml:ns:yang:ietf-yl-packages";
      prefix pkg;
 
+     import ietf-yang-revisions {
+       prefix rev;
+       reference "XXXX: Updated YANG Module Revision Handling";
+     }
+
+
+
+Wilton                    Expires April 5, 2020                [Page 31]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
      import ietf-yang-package-types {
        prefix pkg-types;
        reference "RFC XXX: YANG Packages.";
      }
+
      import ietf-yang-library {
        prefix yanglib;
        reference "RFC 7895bis: YANG Library";
-     }
-     import ietf-yang-revisions {
-       prefix rev;
-       reference "XXX, (draft-verdt-netmod-yang-module-versioning):
-                  Updated YANG Module Revision Handling";
      }
 
      organization
@@ -1562,13 +1757,6 @@ Internet-Draft                YANG Packages               September 2019
 
         Author:   Rob Wilton
                   <mailto:rwilton@cisco.com>";
-
-
-
-Wilton                   Expires March 15, 2020                [Page 28]
-
-Internet-Draft                YANG Packages               September 2019
-
 
      description
        "This module provides defined augmentations to YANG library to
@@ -1592,11 +1780,18 @@ Internet-Draft                YANG Packages               September 2019
      // RFC Ed.: replace XXXX with actual RFC number and remove this
      // note.
      revision 2019-09-11 {
+       rev:revision-label 0.1.0;
        description
          "Initial revision";
        reference
          "RFC XXXX: YANG Schema Versioning.";
      }
+
+
+
+Wilton                    Expires April 5, 2020                [Page 32]
+
+Internet-Draft                YANG Packages                 October 2019
 
 
      /*
@@ -1618,14 +1813,6 @@ Internet-Draft                YANG Packages               September 2019
      /*
       * Allow schema to be related to a YANG package.
       */
-
-
-
-Wilton                   Expires March 15, 2020                [Page 29]
-
-Internet-Draft                YANG Packages               September 2019
-
-
      augment "/yanglib:yang-library/yanglib:schema" {
        description
          "Allow datastore schema to be related to a YANG package";
@@ -1646,6 +1833,28 @@ Internet-Draft                YANG Packages               September 2019
 
             description
               "The version of the package this schema relates to.";
+          }
+          leaf-list supported-feature {
+            type pkg-types:scoped-feature;
+            description
+              "Lists all supported features from all supported modules
+               included in the package.
+
+               Reports the same information that is available via the
+               'feature' leaf list in YANG library, and is provided as a
+
+
+
+Wilton                    Expires April 5, 2020                [Page 33]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
+               convenience to clients to avoid having to query the full
+               YANG library information.
+
+               Features are identified using
+               '<module-name>:<feature-name>'";
           }
 
          description
@@ -1674,21 +1883,13 @@ Internet-Draft                YANG Packages               September 2019
             revision.
 
             Only used for YANG package definitions";
-
-
-
-Wilton                   Expires March 15, 2020                [Page 30]
-
-Internet-Draft                YANG Packages               September 2019
-
-
        }
      }
    }
    <CODE ENDS>
 
 
-11.  Security Considerations
+10.  Security Considerations
 
    The YANG modules specified in this document defines a schema for data
    that is accessed by network management protocols such as NETCONF
@@ -1697,6 +1898,13 @@ Internet-Draft                YANG Packages               September 2019
    transport is Secure Shell (SSH) [RFC6242].  The lowest RESTCONF layer
    is HTTPS, and the mandatory-to-implement secure transport is TLS
    [RFC5246].
+
+
+
+Wilton                    Expires April 5, 2020                [Page 34]
+
+Internet-Draft                YANG Packages                 October 2019
+
 
    The NETCONF access control model [RFC6536] provides the means to
    restrict access for particular NETCONF or RESTCONF users to a
@@ -1715,6 +1923,8 @@ Internet-Draft                YANG Packages               September 2019
    security controls of the network management protocols.  Hence, it is
    important to also consider controlling access to these package
    instance data documents to restrict access to sensitive information.
+   SHA-256 checksums are used to ensure the integrity of YANG package
+   definitions, imported modules, and sub-modules.
 
    As per the YANG library security considerations, the module, revision
    and version information in YANG packages may help an attacker
@@ -1729,16 +1939,7 @@ Internet-Draft                YANG Packages               September 2019
    implementations with such a defect, in order to launch a denial-of-
    service attack on the device.
 
-
-
-
-
-Wilton                   Expires March 15, 2020                [Page 31]
-
-Internet-Draft                YANG Packages               September 2019
-
-
-12.  IANA Considerations
+11.  IANA Considerations
 
    It is expected that a central registry of standard YANG package
    definitions is required to support this packaging solution.
@@ -1750,19 +1951,30 @@ Internet-Draft                YANG Packages               September 2019
 
    TODO - Add IANA registrations for YANG modules defined in this draft.
 
-13.  Open Questions/Issues
+
+
+
+
+
+
+Wilton                    Expires April 5, 2020                [Page 35]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
+12.  Open Questions/Issues
 
    All issues, along with the draft text, are currently being tracked at
    https://github.com/rgwilton/YANG-Packages-Draft/issues/
 
-14.  Acknowledgements
+13.  Acknowledgements
 
    Feedback helping shape this document has kindly been provided by Andy
    Bierman, James Cumming, Ladislav Lhotka, and Jason Sterne.
 
-15.  References
+14.  References
 
-15.1.  Normative References
+14.1.  Normative References
 
    [I-D.ietf-netconf-rfc7895bis]
               Bierman, A., Bjorklund, M., Schoenwaelder, J., Watsen, K.,
@@ -1771,8 +1983,13 @@ Internet-Draft                YANG Packages               September 2019
 
    [I-D.ietf-netmod-module-tags]
               Hopps, C., Berger, L., and D. Bogdanovic, "YANG Module
-              Tags", draft-ietf-netmod-module-tags-08 (work in
-              progress), May 2019.
+              Tags", draft-ietf-netmod-module-tags-09 (work in
+              progress), September 2019.
+
+   [I-D.ietf-netmod-yang-data-ext]
+              Bierman, A., Bjorklund, M., and K. Watsen, "YANG Data
+              Structure Extensions", draft-ietf-netmod-yang-data-ext-04
+              (work in progress), July 2019.
 
    [I-D.ietf-netmod-yang-instance-file-format]
               Lengyel, B. and B. Claise, "YANG Instance Data File
@@ -1785,19 +2002,21 @@ Internet-Draft                YANG Packages               September 2019
               Revision Handling", draft-verdt-netmod-yang-module-
               versioning-00 (work in progress), July 2019.
 
-
-
-
-
-Wilton                   Expires March 15, 2020                [Page 32]
-
-Internet-Draft                YANG Packages               September 2019
-
-
    [I-D.verdt-netmod-yang-solutions]
               Wilton, R., "YANG Versioning Solution Overview", draft-
               verdt-netmod-yang-solutions-01 (work in progress), July
               2019.
+
+
+
+
+
+
+
+Wilton                    Expires April 5, 2020                [Page 36]
+
+Internet-Draft                YANG Packages                 October 2019
+
 
    [I-D.verdt-netmod-yang-versioning-reqs]
               Clarke, J., "YANG Module Versioning Requirements", draft-
@@ -1841,25 +2060,26 @@ Internet-Draft                YANG Packages               September 2019
               Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
               <https://www.rfc-editor.org/info/rfc8040>.
 
-
-
-
-
-Wilton                   Expires March 15, 2020                [Page 33]
-
-Internet-Draft                YANG Packages               September 2019
-
-
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+
+
+
+
+
+Wilton                    Expires April 5, 2020                [Page 37]
+
+Internet-Draft                YANG Packages                 October 2019
+
 
    [RFC8342]  Bjorklund, M., Schoenwaelder, J., Shafer, P., Watsen, K.,
               and R. Wilton, "Network Management Datastore Architecture
               (NMDA)", RFC 8342, DOI 10.17487/RFC8342, March 2018,
               <https://www.rfc-editor.org/info/rfc8342>.
 
-15.2.  Informative References
+14.2.  Informative References
 
    [I-D.bierman-netmod-yang-package]
               Bierman, A., "The YANG Package Statement", draft-bierman-
@@ -1898,17 +2118,18 @@ Appendix A.  Tree output for ietf-yang-library with package
        |  |  |  +--ro submodule* [name]
        |  |  |  |  +--ro name        yang:yang-identifier
        |  |  |  |  +--ro revision?   revision-identifier
-
-
-
-Wilton                   Expires March 15, 2020                [Page 34]
-
-Internet-Draft                YANG Packages               September 2019
-
-
        |  |  |  |  +--ro location*   inet:uri
        |  |  |  +--ro feature*     yang:yang-identifier
        |  |  |  +--ro deviation*   -> ../../module/name
+       |  |  |  +--ro pkg:checksum -> ../../module/name
+
+
+
+Wilton                    Expires April 5, 2020                [Page 38]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
        |  |  +--ro import-only-module* [name revision]
        |  |     +--ro name                     yang:yang-identifier
        |  |     +--ro revision                 union
@@ -1926,42 +2147,50 @@ Internet-Draft                YANG Packages               September 2019
        |  |  +--ro pkg:package
        |  |     +--ro pkg:name?
        |  |     |       -> /yanglib:yang-library/package/name
-       |  |     +--ro pkg:version?   leafref
+       |  |     +--ro pkg:version?         leafref
+       |  |     +--ro supported-feature*   pkg-types:scoped-feature
        |  +--ro datastore* [name]
        |  |  +--ro name      ds:datastore-ref
        |  |  +--ro schema    -> ../../schema/name
        |  +--ro content-id     string
        |  +--ro pkg:package* [name version]
        |     +--ro pkg:name                      yang:yang-identifier
-       |     +--ro pkg:version                   yang-sem-ver
-       |     +--ro pkg:revision-date?
-       |     |       yanglib:revision-identifier
-       |     +--ro pkg:location*                 inet:uri
+       |     +--ro pkg:version                   rev:revision-label
+       |     +--ro pkg:timestamp?                yang:date-and-time
+       |     +--ro pkg:organization?             string
+       |     +--ro pkg:contact?                  string
        |     +--ro pkg:description?              string
        |     +--ro pkg:reference?                string
-       |     +--ro pkg:previous-version?         yang-sem-ver
-       |     +--ro pkg:tag*                      tags:tag
        |     +--ro pkg:referentially-complete?   boolean
-       |     +--ro pkg:mandatory-feature*        string
+       |     +--ro pkg:is-local?                 boolean
+       |     +--ro pkg:previous-version?         yang-sem-ver
+       |     +--ro pkg:nbc-changes?              boolean
+       |     +--ro pkg:tag*                      tags:tag
+       |     +--ro pkg:supported-feature*        string
        |     +--ro pkg:imported-packages* [name version]
-       |     |  +--ro pkg:name        yang:yang-identifier
-       |     |  +--ro pkg:version     yang-sem-ver
-       |     |  +--ro pkg:deviated?   boolean
+       |     |  +--ro pkg:name                   yang:yang-identifier
+       |     |  +--ro pkg:version                rev:revision-label
+       |     |  +--ro pkg:replaces-version*      rev:revision-label
+       |     |  +--ro pkg:modified?              boolean
+       |     |  +--ro pkg:location*              inet:uri
+       |     |  +--ro pkg:checksum?              string
        |     +--ro pkg:module-set*
-       |             -> /yanglib:yang-library/module-set/name
+       |     |       -> /yanglib:yang-library/module-set/name
+       |     +--ro pkg:location*                 inet:uri
+       |     +--ro pkg:checksum?                 string
+
+
+
+Wilton                    Expires April 5, 2020                [Page 39]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
        x--ro modules-state
           x--ro module-set-id    string
           x--ro module* [name revision]
              x--ro name                yang:yang-identifier
              x--ro revision            union
-
-
-
-Wilton                   Expires March 15, 2020                [Page 35]
-
-Internet-Draft                YANG Packages               September 2019
-
-
              +--ro schema?             inet:uri
              x--ro namespace           inet:uri
              x--ro feature*            yang:yang-identifier
@@ -1988,7 +2217,11 @@ Appendix B.  Examples
    illustrate the file format of YANG packages, and how package
    dependencies work.  It does not imply that such packages will be
    defined by IETF, or which modules would be included in those packages
-   even if they were defined.
+   even if they were defined.  For brevity, the examples exclude
+   namespace declarations, and use a shortened URL of "tiny.cc/ietf-
+   yang" as a replacement for
+   "https://raw.githubusercontent.com/YangModels/yang/master/standard/
+   ietf/RFC".
 
 B.1.  Example IETF Network Device YANG package
 
@@ -2001,6 +2234,14 @@ B.1.  Example IETF Network Device YANG package
    includes functionality such as system information, interface and
    basic IP configuration.
 
+
+
+
+Wilton                    Expires April 5, 2020                [Page 40]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
    As for all YANG packages, all import dependencies are fully resolved.
    Because this example uses YANG modules that have been standardized
    before YANG semantic versioning, they modules are referenced by
@@ -2008,108 +2249,112 @@ B.1.  Example IETF Network Device YANG package
 
 
    <CODE BEGINS> file "example-ietf-network-device-pkg.json"
-   ========= NOTE: '\\' line wrapping per BCP XX (RFC XXXX) ===========
-
-
-
-
-Wilton                   Expires March 15, 2020                [Page 36]
-
-Internet-Draft                YANG Packages               September 2019
-
+   ========= NOTE: '\' line wrapping per BCP XX (RFC XXXX) ===========
 
     {
      "ietf-yang-instance-data:instance-data-set": {
        "name": "example-ietf-network-device-pkg",
-       "target-ptr": "TBD",
-       "timestamp": "2018-12-13T17:00:00Z",
-       "description": "Example IETF network device YANG package definit\
-   \ion",
+       "module": [ "ietf-yang-package@2019-09-11.yang" ],
+       "description": "YANG package definition",
        "content-data": {
          "ietf-yang-package:yang-package": {
-           "name": "example-ietf-network-device",
+           "name": "example-ietf-network-device-pkg",
            "version": "1.1.2",
-           "namespace": "urn:ietf:params:xml:ns:yang-pkg:ietf-network-d\
-   \evice",
-           "location": "file://example.org/yang/packages/ietf-network-d\
-   \evice@v1.1.2.json",
-           "description": "This package defines a small sample set of Y\
-   \ANG modules that could represent the basic set of modules that a st\
-   \andard network device might be expected to support.",
+           "timestamp": "2018-12-13T17:00:00Z",
+           "organization": "IETF",
+           "contact" : "WG Web:   <http://tools.ietf.org/wg/netmod/>, \
+                        WG List:  <mailto:netmod@ietf.org>",
+           "description": "Example IETF network device YANG package.\
+              \
+              This package defines a small sample set of \
+              YANG modules that could represent the basic set of \
+              modules that a standard network device might be expected \
+              to support.",
            "reference": "XXX, draft-rwilton-netmod-yang-packages",
-           "revision-date": "2018-11-26",
+           "location": [ "file://example.org/yang/packages/\
+                                     ietf-network-device@v1.1.2.json" ],
            "module": [
              {
                "name": "iana-crypt-hash",
                "revision": "2014-08-06",
-               "namespace": "urn:ietf:params:xml:ns:yang:iana-crypt-has\
-   \h",
-               "location": "https://raw.githubusercontent.com/YangModel\
-   \s/yang/master/standard/ietf/RFC/iana-crypt-hash%402014-08-06.yang"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                                   iana-crypt-hash%402014-08-06.yang" ],
+               "checksum": "fa9fde408ddec2c16bf2c6b9e4c2f80b\
+                            813a2f9e48c127016f3fa96da346e02d"
              },
              {
                "name": "ietf-system",
                "revision": "2014-08-06",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-system",
-               "location": "https://raw.githubusercontent.com/YangModel\
-   \s/yang/master/standard/ietf/RFC/ietf-system%402014-08-06.yang"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                                       ietf-system%402014-08-06.yang" ],
+               "checksum": "8a692ee2521b4ffe87a88303a61a1038\
+                            79ee26bff050c1b05a2027ae23205d3f"
              },
+
+
+
+Wilton                    Expires April 5, 2020                [Page 41]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
              {
                "name": "ietf-interfaces",
                "revision": "2018-02-20",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-interface\
-   \s",
-               "location": "https://raw.githubusercontent.com/YangModel\
-   \s/yang/master/standard/ietf/RFC/ietf-interfaces%402018-02-20.yang"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                                   ietf-interfaces%402018-02-20.yang" ],
+               "checksum": "f6faea9938f0341ed48fda93dba9a69a\
+                            a32ee7142c463342efec3d38f4eb3621"
              },
              {
                "name": "ietf-netconf-acm",
                "revision": "2018-02-14",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-netconf-a\
-
-
-
-Wilton                   Expires March 15, 2020                [Page 37]
-
-Internet-Draft                YANG Packages               September 2019
-
-
-   \cm",
-               "location": "https://raw.githubusercontent.com/YangModel\
-   \s/yang/master/standard/ietf/RFC/ietf-netconf-acm%402018-02-14.yang"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                                  ietf-netconf-acm%402018-02-14.yang" ],
+               "checksum": "e03f91317f9538a89296e99df3ff0c40\
+                            03cdfea70bf517407643b3ec13c1ed25"
              },
              {
                "name": "ietf-key-chain",
                "revision": "2017-06-15",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-key-chain\
-   \",
-               "location": "https://raw.githubusercontent.com/YangModel\
-   \s/yang/master/standard/ietf/RFC/ietf-key-chain@2017-06-15.yang"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                                      ietf-key-chain@2017-06-15.yang" ],
+               "checksum": "6250705f59fc9ad786e8d74172ce90d5\
+                            8deec437982cbca7922af40b3ae8107c"
              },
              {
                "name": "ietf-ip",
                "revision": "2018-02-22",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-ip",
-               "location": "https://raw.githubusercontent.com/YangModel\
-   \s/yang/master/standard/ietf/RFC/ietf-ip%402018-02-22.yang"
-             }
+               "location": [ "https://tiny.cc/ietf-yang/\
+                                           ietf-ip%402018-02-22.yang" ],
+               "checksum": "b624c84a66c128ae69ab107a5179ca8e\
+                            20e693fb57dbe5cb56c3db2ebb18c894"
+           }
            ],
            "import-only-module": [
              {
                "name": "ietf-yang-types",
                "revision": "2013-07-15",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-yang-type\
-   \s",
-               "location": "https://raw.githubusercontent.com/YangModel\
-   \s/yang/master/standard/ietf/RFC/ietf-yang-types%402013-07-15.yang"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                                   ietf-yang-types%402013-07-15.yang" ],
+               "checksum": "a04cdcc875764a76e89b7a0200c6b9d8\
+                            00b10713978093acda7840c7c2907c3f"
              },
              {
                "name": "ietf-inet-types",
                "revision": "2013-07-15",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-inet-type\
-   \s",
-               "location": "https://raw.githubusercontent.com/YangModel\
-   \s/yang/master/standard/ietf/RFC/ietf-inet-types%402013-07-15.yang"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                                   ietf-inet-types%402013-07-15.yang" ],
+               "checksum": "12d98b0143a5ca5095b36420f9ebc1ff\
+
+
+
+Wilton                    Expires April 5, 2020                [Page 42]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
+                            a61cfd2eaa850080244cadf01b86ddf9"
              }
            ]
          }
@@ -2117,17 +2362,6 @@ Internet-Draft                YANG Packages               September 2019
      }
    }
    <CODE ENDS>
-
-
-
-
-
-
-
-
-Wilton                   Expires March 15, 2020                [Page 38]
-
-Internet-Draft                YANG Packages               September 2019
 
 
 B.2.  Example IETF Basic Routing YANG package
@@ -2155,158 +2389,157 @@ B.2.  Example IETF Basic Routing YANG package
    {
      "ietf-yang-instance-data:instance-data-set": {
        "name": "example-ietf-routing-pkg",
-       "target-ptr": "TBD",
-       "timestamp": "2018-12-13T17:00:00Z",
-       "description": "Example IETF routing YANG package definition",
+       "module": [ "ietf-yang-package@2019-09-11.yang" ],
+       "description": "YANG package definition",
        "content-data": {
          "ietf-yang-package:yang-package": {
            "name": "example-ietf-routing",
            "version": "1.3.1",
-           "namespace": "urn:ietf:params:xml:ns:yang-pkg:ietf-routing",
-           "location": "file://example.org/yang/packages/ietf-routing@v\
-   \1.3.1.json",
-           "description": "This package defines a small sample set of I\
-   \ETF routing YANG modules that could represent the set of IETF routi\
-   \ng functionality that a basic IP network device might be expected t\
-   \o support.",
+           "timestamp": "2018-12-13T17:00:00Z",
+           "description": "This package defines a small sample set of \
+             IETF routing YANG modules that could represent the set of \
+             IETF routing functionality that a basic IP network device \
+             might be expected to support.",
            "reference": "XXX, draft-rwilton-netmod-yang-packages",
-           "revision-date": "2018-11-26",
            "imported-packages": [
+
+
+
+Wilton                    Expires April 5, 2020                [Page 43]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
              {
                "name": "ietf-network-device",
                "version": "1.1.2",
-               "location": [
-                 "http://example.org/yang/packages/ietf-network-device@\
-   \v1.1.2.json"
-
-
-
-Wilton                   Expires March 15, 2020                [Page 39]
-
-Internet-Draft                YANG Packages               September 2019
-
-
-               ]
+               "location": [ "http://example.org/yang/packages/\
+                                    \ietf-network-device@v1.1.2.json" ],
+               "checksum": ""
              }
            ],
            "module": [
              {
                "name": "ietf-routing",
                "revision": "2018-03-13",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-routing",
-               "location": [
-                 "https://raw.githubusercontent.com/YangModels/yang/mas\
-   \ter/standard/ietf/RFC/ietf-routing@2018-03-13.yang"
-               ]
+               "location": [ "https://tiny.cc/ietf-yang/\
+                                       \ietf-routing@2018-03-13.yang" ],
+               "checksum": ""
              },
              {
                "name": "ietf-ipv4-unicast-routing",
                "revision": "2018-03-13",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-ipv4-unca\
-   \st-routing",
-               "location": [
-                 "https://raw.githubusercontent.com/YangModels/yang/mas\
-   \ter/standard/ietf/RFC/ietf-ipv4-unicast-routing@2018-03-13.yang"
-               ]
+               "location": [ "https://tiny.cc/ietf-yang/\
+                          \ietf-ipv4-unicast-routing@2018-03-13.yang" ],
+               "checksum": ""
              },
              {
                "name": "ietf-ipv6-unicast-routing",
                "revision": "2018-03-13",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-ipv6-unca\
-   \st-routing",
-               "location": [
-                 "https://raw.githubusercontent.com/YangModels/yang/mas\
-   \ter/standard/ietf/RFC/ietf-ipv6-unicast-routing@2018-03-13.yang"
-               ]
+               "location": [ "https://tiny.cc/ietf-yang/\
+                          \ietf-ipv6-unicast-routing@2018-03-13.yang" ],
+               "checksum": ""
              },
              {
                "name": "ietf-isis",
                "revision": "2018-12-11",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-isis"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                          \" ],
+               "checksum": ""
              },
              {
                "name": "ietf-interfaces-common",
                "revision": "2018-07-02",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-interface\
-   \s-common"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                          \" ],
+               "checksum": ""
              },
              {
                "name": "ietf-if-l3-vlan",
                "revision": "2017-10-30",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-if-l3-vla\
+               "location": [ "https://tiny.cc/ietf-yang/\
 
 
 
-Wilton                   Expires March 15, 2020                [Page 40]
+Wilton                    Expires April 5, 2020                [Page 44]
 
-Internet-Draft                YANG Packages               September 2019
+Internet-Draft                YANG Packages                 October 2019
 
 
-   \n"
+                          \" ],
+               "checksum": ""
              },
              {
                "name": "ietf-routing-policy",
                "revision": "2018-10-19",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-routing-p\
-   \olicy"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                          \" ],
+               "checksum": ""
              },
              {
                "name": "ietf-bgp",
                "revision": "2018-05-09",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-bgp"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                          \" ],
+               "checksum": ""
              },
              {
                "name": "ietf-access-control-list",
                "revision": "2018-11-06",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-access-co\
-   \ntrol-list"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                          \" ],
+               "checksum": ""
              }
            ],
            "import-only-module": [
              {
                "name": "ietf-routing-types",
                "revision": "2017-12-04",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-routing-t\
-   \ypes",
+               "location": [ "https://tiny.cc/ietf-yang/\
+                          \" ],
                "location": [
-                 "https://raw.githubusercontent.com/YangModels/yang/mas\
-   \ter/standard/ietf/RFC/ietf-routing-types@2017-12-04.yang"
+                 "ietf-routing-types@2017-12-04.yang"
                ]
+               "checksum": ""
              },
              {
                "name": "iana-routing-types",
                "revision": "2017-12-04",
-               "namespace": "urn:ietf:params:xml:ns:yang:iana-routing-t\
-   \ypes",
+               "location": [ "https://tiny.cc/ietf-yang/\
+                          \" ],
                "location": [
-                 "https://raw.githubusercontent.com/YangModels/yang/mas\
-   \ter/standard/ietf/RFC/iana-routing-types@2017-12-04.yang"
+                 "iana-routing-types@2017-12-04.yang"
                ]
+               "checksum": ""
              },
              {
                "name": "ietf-bgp-types",
+
+
+
+Wilton                    Expires April 5, 2020                [Page 45]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
                "revision": "2018-05-09",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-bgp-types"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                          \" ],
+               "checksum": ""
              },
              {
                "name": "ietf-packet-fields",
-
-
-
-Wilton                   Expires March 15, 2020                [Page 41]
-
-Internet-Draft                YANG Packages               September 2019
-
-
                "revision": "2018-11-06",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-packet-fi\
-   \elds"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                          \" ],
+               "checksum": ""
              },
              {
                "name": "ietf-ethertypes",
                "revision": "2018-11-06",
-               "namespace": "urn:ietf:params:xml:ns:yang:ietf-ethertype\
-   \s"
+               "location": [ "https://tiny.cc/ietf-yang/\
+                          \" ],
+               "checksum": ""
              }
            ]
          }
@@ -2337,6 +2570,14 @@ B.3.  Package import conflict resolution example
        "description": "First imported example package",
        "content-data": {
          "ietf-yang-package:yang-package": {
+
+
+
+Wilton                    Expires April 5, 2020                [Page 46]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
            "name": "example-import-1",
            "version": "1.0.0",
            "reference": "XXX, draft-rwilton-netmod-yang-packages",
@@ -2346,14 +2587,6 @@ B.3.  Package import conflict resolution example
                "name": "example-module-A",
                "version": "1.0.0"
              },
-
-
-
-Wilton                   Expires March 15, 2020                [Page 42]
-
-Internet-Draft                YANG Packages               September 2019
-
-
              {
                "name": "example-module-B",
                "version": "1.0.0"
@@ -2393,6 +2626,14 @@ Internet-Draft                YANG Packages               September 2019
                "name": "example-module-E",
                "version": "1.1.0"
              }
+
+
+
+Wilton                    Expires April 5, 2020                [Page 47]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
            ],
            "import-only-module": [
              {
@@ -2402,14 +2643,6 @@ Internet-Draft                YANG Packages               September 2019
              {
                "name": "example-types-module-D",
                "revision": "2018-11-26"
-
-
-
-Wilton                   Expires March 15, 2020                [Page 43]
-
-Internet-Draft                YANG Packages               September 2019
-
-
              }
            ]
          }
@@ -2449,6 +2682,14 @@ Internet-Draft                YANG Packages               September 2019
                "revision": "2018-11-26",
                "replaces-revision": [ "2018-01-01 "]
              }
+
+
+
+Wilton                    Expires April 5, 2020                [Page 48]
+
+Internet-Draft                YANG Packages                 October 2019
+
+
            ]
          }
        }
@@ -2456,15 +2697,81 @@ Internet-Draft                YANG Packages               September 2019
    }
 
 
-Author's Address
+Appendix C.  Possible alternative solutions
+
+   This section briefly describes some alternative solutions.  It can be
+   removed if this document is adopted as a WG draft.
+
+C.1.  Using module tags
+
+   Module tags have been suggested as an alternative solution, and
+   indeed that can address some of the same requirements as YANG
+   packages but not all of them.
+
+   Module tags can be used to group or organize YANG modules.  However,
+   this raises the question of where this tag information is stored.
+   Module tags either require that the YANG module files themselves are
+   updated with the module tag information (creating another versioning
+   problem), or for the module tag information to be hosted elsewhere,
+   perhaps in a centralize YANG Catalog, or in instance data documents
+   similar to how YANG packages have been defined in this draft.
+
+   One of the principle aims of YANG packages is to be a versioned
+   object that defines a precise set of YANG modules versions that work
+   together.  Module tags cannot meet this aim without an explosion of
+   module tags definitions (i.e. a separate module tag must be defined
+   for each package version).
+
+   Module tags cannot support the hierachical scheme to construct YANG
+   schema that is proposed in this draft.
+
+C.2.  Using YANG library
+
+   Another question is whether it is necessary to define new YANG
+   modules to define YANG packages, and whether YANG library could just
+   be reused in an instance data document.  The use of YANG packages
+   offers several benefits over just using YANG library:
+
+   1.  Packages allow schema to be built in a hierarchical fashion.
+       [I-D.ietf-netconf-rfc7895bis] only allows one layer of hierarchy
+       (using module sets), and there must be no conflicts between
+       module revisions in different module-sets.
 
 
 
 
-Wilton                   Expires March 15, 2020                [Page 44]
+
+Wilton                    Expires April 5, 2020                [Page 49]
 
-Internet-Draft                YANG Packages               September 2019
+Internet-Draft                YANG Packages                 October 2019
 
+
+   2.  Packages can be made available off the box, with a well defined
+       unique name, avoiding the need for clients to download, and
+       construct/check the entire YANG schema for each device.  Instead
+       they can rely on the named packages with secure checksums.  YANG
+       library's use of a 'content-id' is unique only to the device that
+       generated them.
+
+   3.  Packages may be versioned using a semantic versioning scheme,
+       YANG library does not provide a schema level semantic version
+       number.
+
+   4.  For a YANG library instance data document to contain the
+       necessary information, it probably needs both YANG library and
+       various augmentations (e.g. to include each module's semantic
+       version number), unless a new version of YANG library is defined
+       containing this information.  The module definition for a YANG
+       package is specified to contain all of the ncessary information
+       to solve the problem without augmentations
+
+   5.  YANG library is designed to publish information about the
+       modules, datastores, and datastore schema used by a server.  The
+       information required to construct an off box schema is not
+       precisely the same, and hence the definitions might deviate from
+       each other over time.
+
+Author's Address
 
    Robert Wilton
    Cisco Systems, Inc.
@@ -2490,31 +2797,4 @@ Internet-Draft                YANG Packages               September 2019
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Wilton                   Expires March 15, 2020                [Page 45]
+Wilton                    Expires April 5, 2020                [Page 50]
