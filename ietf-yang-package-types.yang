@@ -19,11 +19,6 @@ module ietf-yang-package-types {
     reference "RFC 6991: Common YANG Data Types.";
   }
 
-  import ietf-yang-library {
-    prefix yanglib;
-    reference "RFC 8525: YANG Library";
-  }
-
   organization
     "IETF NETMOD (Network Modeling) Working Group";
 
@@ -69,6 +64,7 @@ module ietf-yang-package-types {
       "RFC XXXX: YANG Packages.";
   }
 
+  
   /*
    * Typedefs
    */
@@ -107,6 +103,7 @@ module ietf-yang-package-types {
       "The SHA-256 hash represented as a hexadecimal string.";
   }
 
+  
   /*
    * Groupings
    */
@@ -271,9 +268,9 @@ module ietf-yang-package-types {
          explicitly listed in the imported-packages list with the
          'modified' leaf set to true.
 
-         For import-only modules, the replaces-revision leaf-list can
-         be used to select the specific module versions imported by
-         this package.";
+         For import-only modules, the 'replaces-revision' leaf-list
+         can be used to select the specific module versions imported
+         by this package.";
       reference
         "XXX";
 
@@ -318,199 +315,4 @@ module ietf-yang-package-types {
       }
     }
   }
-
-  grouping yang-pkg-file-definition {
-    description
-      "The set of parameters that describe a particular YANG
-       package.";
-
-    uses yang-pkg-identification-leafs;
-    
-    uses yang-pkg-common-leafs;
-
-    list module {
-      key "name";
-      description
-        "An entry in this list represents a module that must be
-         implemented by a server implementing this package, as per
-         RFC 7950 section 5.6.5, with a particular set of supported
-         features and deviations.
-
-         A entry in this list overrides any module version
-         'implemented' by an imported package";
-      reference
-        "RFC 7950: The YANG 1.1 Data Modeling Language.";
-
-      leaf name {
-        type yang:yang-identifier;
-        mandatory true;
-        description
-          "The YANG module name.";
-      }
-
-      leaf revision {
-        type rev:revision-date-or-label;
-        description
-          "The YANG module revision date or revision-label.
-
-           If no revision statement is present in the YANG module,
-           this leaf is not instantiated.";
-      }
-
-      leaf namespace {
-        type inet:uri;
-        description
-          "The XML namespace identifier for this module.";
-      }
-
-      uses yanglib:location-leaf-list;
-
-      leaf checksum {
-        type pkg-types:sha-256-hash;
-        description 
-          "The SHA-256 hash calculated on the textual module
-           definition, represented as a hexadecimal string.";
-      }
-
-      list submodule {
-        key "name";
-        description
-          "Each entry represents one submodule within the
-           parent module.";
-
-        leaf name {
-          type yang:yang-identifier;
-          description
-            "The YANG submodule name.";
-        }
-        leaf revision {
-          type yanglib:revision-identifier;
-          mandatory true;
-          description
-            "The YANG submodule revision date.  If the parent module
-             include statement for this submodule includes a revision
-             date then it MUST match this leaf's value.";
-        }
-
-        uses yanglib:location-leaf-list;
-
-        leaf checksum {
-          type pkg-types:sha-256-hash;
-          description 
-            "The SHA-256 hash calculated on the textual submodule
-             definition, represented as a hexadecimal string.";
-        }
-      }
-    }
-
-    list import-only-module {
-      key "name revision";
-      description
-        "An entry in this list indicates that the server imports
-         reusable definitions from the specified revision of the
-         module, but does not implement any protocol accessible
-         objects from this revision.
-
-         Multiple entries for the same module name MAY exist.  This
-         can occur if multiple modules import the same module, but
-         specify different revision-dates in the import statements.";
-
-      leaf name {
-        type yang:yang-identifier;
-        description
-          "The YANG module name.";
-      }
-
-      leaf revision {
-        type rev:revision-date-or-label;
-        description
-          "The YANG module revision date or revision-label.
-
-           If no revision statement is present in the YANG module,
-           this leaf is not instantiated.";
-      }
-
-      leaf-list replaces-revision {
-        type rev:revision-date-or-label;
-        description
-          "Gives the revision of an import-only-module defined in
-           an imported package that is replaced by this
-           import-only-module revision.";
-      }
-
-      leaf namespace {
-        type inet:uri;
-        description
-          "The XML namespace identifier for this module.";
-      }
-
-      uses yanglib:location-leaf-list;
-
-      leaf checksum {
-        type pkg-types:sha-256-hash;
-        description 
-          "The SHA-256 hash calculated on the textual submodule
-           definition, represented as a hexadecimal string.";
-        }
-
-      list submodule {
-        key "name";
-        description
-          "Each entry represents one submodule within the
-           parent module.";
-
-        leaf name {
-          type yang:yang-identifier;
-          description
-            "The YANG submodule name.";
-        }
-        leaf revision {
-          type yanglib:revision-identifier;
-          mandatory true;
-          description
-            "The YANG submodule revision date.  If the parent module
-             include statement for this submodule includes a revision
-             date then it MUST match this leaf's value.";
-        }
-
-        uses yanglib:location-leaf-list;
-
-        leaf checksum {
-          type pkg-types:sha-256-hash;
-          description 
-            "The SHA-256 hash calculated on the textual submodule
-             definition, represented as a hexadecimal string.";
-        }
-      }
-    }
-  }
-
-  grouping yang-pkg-library-definition {
-    description
-      "The set of parameters that describe a particular YANG
-       package.";
-
-    uses yang-pkg-identification-leafs;
-    uses yang-pkg-common-leafs;
-    
-    leaf-list module-set {
-      type leafref {
-        path "/yanglib:yang-library/yanglib:module-set/yanglib:name";
-      }
-      description
-        "Describes any modules in addition to, and replacing, and
-         modules defined in the imported packages.
-
-         If a non import-only module appears in multiple module sets,
-         then the module revision and the associated features and
-         deviations must be identical.";
-    }
-
-    leaf checksum {
-      type pkg-types:sha-256-hash;
-      description 
-        "The SHA-256 hash calculated on the textual package
-         definition, represented as a hexadecimal string.";
-    }
-  } 
 }

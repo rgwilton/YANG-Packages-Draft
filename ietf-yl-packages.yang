@@ -57,10 +57,11 @@ module ietf-yl-packages {
       "RFC XXXX: YANG Schema Versioning.";
   }
 
-
+  
   /*
-   * Add the list of packages into YANG libary.
+   * Augmentations
    */
+  
   augment "/yanglib:yang-library" {
     description "Add YANG package definitions into YANG library";
     
@@ -70,13 +71,32 @@ module ietf-yl-packages {
 
       description "Defines the packages available on this server.";
 
-      uses "pkg-types:yang-pkg-library-definition";
+      uses pkg-types:yang-pkg-identification-leafs;
+      uses pkg-types:yang-pkg-common-leafs;
+    
+      leaf-list module-set {
+        type leafref {
+          path "/yanglib:yang-library/yanglib:module-set/" +
+               "yanglib:name";
+        }
+        description
+          "Describes any modules in addition to, and replacing, and
+           modules defined in the imported packages.
+
+           If a non import-only module appears in multiple module
+           sets, then the module revision and the associated features
+           and deviations must be identical.";
+      }
+
+      leaf checksum {
+        type pkg-types:sha-256-hash;
+        description 
+          "The SHA-256 hash calculated on the textual package
+           definition, represented as a hexadecimal string.";
+      }
     }
   }
 
-  /*
-   * Allow schema to be related to a YANG package.
-   */
   augment "/yanglib:yang-library/yanglib:schema" {
     description
       "Allow datastore schema to be related to a YANG package";
@@ -119,8 +139,7 @@ module ietf-yl-packages {
     }
   }
 
-  augment
-    "/yanglib:yang-library/yanglib:module-set/yanglib:module" {
+  augment "/yanglib:yang-library/yanglib:module-set/yanglib:module" {
 
     description
       "Add 'checksum' to implemented module definitions.";
@@ -149,9 +168,8 @@ module ietf-yl-packages {
     }
   }
 
-  augment
-    "/yanglib:yang-library/yanglib:module-set/" +
-    "yanglib:import-only-module" {
+  augment "/yanglib:yang-library/yanglib:module-set/" +
+          "yanglib:import-only-module" {
 
     description
       "Add 'replaces-revision' and 'checksum' to import-only-module
@@ -175,9 +193,8 @@ module ietf-yl-packages {
     }
   }
 
-  augment
-    "/yanglib:yang-library/yanglib:module-set/" +
-    "yanglib:import-only-module/yanglib:submodule" {
+  augment "/yanglib:yang-library/yanglib:module-set/" +
+          "yanglib:import-only-module/yanglib:submodule" {
 
     description
       "Add 'checksum' to import-only-modules' submodule

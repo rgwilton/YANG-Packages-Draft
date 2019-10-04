@@ -105,59 +105,33 @@
       </t>
     </section>
     <section anchor="intro" title="Introduction">
-      <t>This document defines and describes the YANG <xref
-      target="RFC7950"/> constructs that are used to define and use YANG
-      packages.</t>
+      <t>This document defines and describes the YANG <xref target="RFC7950"/>
+      constructs that are used to define and use YANG packages.</t>
 
-      <t>A YANG package is an organizational structure that groups a
-      set of related YANG modules together into a consistent versioned
-      definition.  YANG packages can themselves refer to and reuse
-      other package definitions.</t>
+      <t>A YANG package is an organizational structure that groups a set of
+      related YANG modules together into a consistent versioned definition.
+      YANG packages can themselves refer to and reuse other package
+      definitions.</t>
 
-      <t>The document consists of the following significant sections:</t>
-
-      <t>A background section that describes some of the prior work in
-      this area, both within IETF and the wider industry.</t>
-
-      <t>An overview of the objectives for a YANG packaging solution,
-      and also what work is out of scope for this document.</t>
-
-      <t>The definition of YANG packages, how package
-      definitions are constructed, and how they are used.</t>
-      
-      <t>How YANG instance data documents <xref
-      target="I-D.ietf-netmod-yang-instance-file-format"/> are used to
-      define particular YANG package instances.</t>
-      
-      <t>Augmentations to the YANG library <xref
-      target="I-D.ietf-netconf-rfc7895bis"/> content published by
-      servers to include YANG packaging related information.</t>
-      
-      <t>YANG modules the provide the definitions for YANG
-      packages.</t>
-
-      <t>Non-normative examples of YANG package instances are provided
-      in the appendicies.</t>
+      <t>Non-normative examples of YANG package instances are provided in the
+      appendicies.</t>
     </section>
     <section anchor="background" title="Background on YANG packaging">
-      <t>It has long been acknowledged within the IETF NETMOD
-      community that network management using YANG requires a unit of
-      organization and conformance that is broader in scope than
-      individual YANG modules.</t>
+      <t>It has long been acknowledged within the IETF NETMOD community that
+      network management using YANG requires a unit of organization and
+      conformance that is broader in scope than individual YANG modules.</t>
       
       <t>'The YANG Package Statement' <xref
-      target="I-D.bierman-netmod-yang-package"/> proposed a YANG
-      package mechanism based on new YANG language statements, where a
-      YANG package is defined in a file similar to how YANG modules
-      are defined, and would require enhancements to YANG compilers to
-      understand the new statements used to define particular package
-      instances.</t>
+      target="I-D.bierman-netmod-yang-package"/> proposed a YANG package
+      mechanism based on new YANG language statements, where a YANG package is
+      defined in a file similar to how YANG modules are defined, and would
+      require enhancements to YANG compilers to understand the new statements
+      used to define particular package instances.</t>
       
-      <t>OpenConfig <xref target="openconfigsemver"/> describes an
-      approach to versioning 'bundle releases' based on git tags.
-      I.e. a set of modules, at particular versions, can be marked
-      with the same release tag to indicate that they are known to
-      interoperate together.</t>
+      <t>OpenConfig <xref target="openconfigsemver"/> describes an approach to
+      versioning 'bundle releases' based on git tags.  I.e. a set of modules, at
+      particular versions, can be marked with the same release tag to indicate
+      that they are known to interoperate together.</t>
 
       <t>The NETMOD WG in general, and the YANG versioning design team in
       particular, are exploring solutions <xref
@@ -174,65 +148,77 @@
       <t>The main goals of YANG package definitions include, but are
       not restricted to:
       <list style="symbols">
-	<t>To act as a simplified YANG conformance mechanism.  Rather
-	than conformance being performed against a set of individual
-	YANG module revisions, conformance could also be more simply
-	stated in terms of YANG packages, with a set modifications
+	<t>To provide an alternative, simplified, YANG conformance mechanism.
+	Rather than conformance being performed against a set of individual YANG
+	module revisions, features, and deviations, conformance could also be
+	more simply stated in terms of YANG packages, with a set modifications
 	(e.g. additional modules, deviations, or features).</t>
-	<t>To allow YANG datastore schema to be specified in a
-	concise way rather than having to list all modules,
-	revisions, and features.  YANG package definitions can be
-	defined in documents that can be referenced by a URL, rather
-	than requiring explicit lists of modules to be shared between
-	client and server.  Hence, a YANG package must contain
-	sufficient information to allow a client or server to
-	precisely construct the schema associated with the
-	package.</t>
-        <t>To provide generic packaging related YANG grouping
-        definitions for use in other YANG modules, as required.</t>
-	<t>To define a mainly linear versioned history of sets of
-	modules versions that are known to work together.  I.e. to
-	help mitigate the problem were a client must manage devices
-	from multiple vendors, and vendor A implements version 1.0.0
-	of module foo and version 2.0.0 of module bar, and vendor B
-	implements version 2.0.0 of module foo and version 1.0.0 of
-	module bar.  For a client, trying to interoperate with
-	multiple vendors, and many YANG modules, finding a consistent
-	lowest common denominator set of YANG module versions may be
-	difficult, or impossible.</t>
+	<t>To allow YANG schema to be specified in a concise way rather than
+	having each server explicitly list all modules, revisions, and features.
+	YANG package definitions can be defined in documents that are available
+	offline, and accessible via a URL, rather than requiring explicit lists
+	of modules to be shared between client and server.  Hence, a YANG
+	package must contain sufficient information to allow a client or server
+	to precisely construct the schema associated with the package.</t>
+	<t>To define a mainly linear versioned history of sets of modules
+	versions that are known to work together.  I.e. to help mitigate the
+	problem were a client must manage devices from multiple vendors, and
+	vendor A implements version 1.0.0 of module foo and version 2.0.0 of
+	module bar, and vendor B implements version 2.0.0 of module foo and
+	version 1.0.0 of module bar.  For a client, trying to interoperate with
+	multiple vendors, and many YANG modules, finding a consistent lowest
+	common denominator set of YANG module versions may be difficult, or
+	impossible.</t>
       </list>
       </t>
-      <t>Protocol mechanisms of how clients can negotiate which
-      packages or package versions are be used for NETCONF/RESTCONF
-      communications are outside the scope of this document, and are defined in  <xref
+      <t>Protocol mechanisms of how clients can negotiate which packages or
+      package versions are be used for NETCONF/RESTCONF communications are
+      outside the scope of this document, and are defined in <xref
       target="I-D.wilton-netmod-yang-ver-selection"/>.</t>
 
-      <t>Finally, the package definitions proposed by this document
-      are intended to be relatively basic in their definition and the
-      functionality that they support.  As industry gains experience
-      using YANG packages, the standard YANG mechanisms of updating,
-      or augmenting, YANG modules could be used to extend the
-      functionality supported by YANG packages.</t>
+      <t>Finally, the package definitions proposed by this document are intended
+      to be relatively basic in their definition and the functionality that they
+      support.  As industry gains experience using YANG packages, the standard
+      YANG mechanisms of updating, or augmenting, YANG modules could also be
+      used to extend the functionality supported by YANG packages, if
+      required.</t>
     </section>
     
-    <section anchor="package" title="Package description">
-      <t>This document specifies an approach to defining YANG packages
-      that is different to either of the approaches described in the
-      background.</t>
-      <t>The approach defined here is for a YANG package definition
-      structure to be defined using existing YANG language statements
-      without requiring extensions or new YANG statements.  By making
-      use of this structure, instances of YANG packages can be defined
-      as YANG instance data documents <xref
-      target="I-D.ietf-netmod-yang-instance-file-format"/> with well
-      defined names and locations.</t>
-      <t>The YANG sementic versioning scheme, described in
-      draft-verdt-netmod-yang-semver (TBD), is used to version YANG
-      packages using an equivalent scheme to how individual YANG
-      modules version numbers are changed.</t>
-      <t>YANG library is augmented to allow servers to report the
-      packages that they implement and to associate those packages
-      back to particular datastore schema.</t>
+    <section anchor="package" title="YANG Package Definition">
+      <t>This document specifies an approach to defining YANG packages that is
+      different to either of the approaches described in the background.</t>
+
+      <t>A YANG package is a versioned oraganization structure holding a set of
+      related YANG modules, packages, features, and deviations. A YANG package
+      collectively define a YANG schema.</t>
+
+      <t>Each version of a YANG package defines: a set of YANG modules that are
+      implemented at particular revisions; a set of YANG modules that are
+      import-only with particular revisions; and a set of mandatory module
+      features that implementations of the package MUST implement or otherwise
+      exclude via deviations.</t>
+
+      <t>The structure for YANG package definitions uses existing YANG language
+      statements, YANG Data Structure Extensions <xref
+      target="I-D.ietf-netmod-yang-data-ext"/>, and YANG Instance Data File
+      Format <xref target="I-D.ietf-netmod-yang-instance-file-format"/>.</t>
+
+      <t>YANG package definitions are available offline in YANG Instance Data
+      Documents.  Client applications can be designed to support particular
+      package versions that they expect to interoperate with.</t>
+
+      <t>YANG package definitions are available from the server, via
+      augmentations to YANG Library <xref target="RFC8525"/>.  Rather than
+      client applications downloading the entire contents of YANG library to
+      confirm that the server schema is compatible with the client, they can
+      check, or download, a much shorter YANG package definition, and validate
+      that it conforms the expected schema.</t>
+
+      <t>Instances of YANG packages are versioned using the same approaches
+      described in <xref target="I-D.verdt-netmod-yang-module-versioning"/> and
+      <xref target="I-D.verdt-netmod-yang-semver"/>.  This is described in
+      further detail in <xref target="versioning"/></t>
+      
       <t>TODO - It would be helpful if the YANG instance data file
       format <xref
       target="I-D.ietf-netmod-yang-instance-file-format"/> could also
@@ -240,50 +226,39 @@
       an instance data document.  This could either be defined in
       instance-file-format document, or as a YANG augmentation as part of
       this draft.</t>
-      <t>Each version of a YANG package defines: a set of YANG modules
-      that are implemented at particular versions or revisions; a set
-      of YANG modules that are import-only with particular versions or
-      revisions; and a set of mandatory module features that
-      implementations of the package MUST implement or otherwise
-      deviate.</t>
+      
       <section anchor="definition" title="Package definition rules">
 	<t>The following rules define how packages are defined:
 	<list>
-	<t>Every YANG package definition MUST be referentially
-	complete.  I.e. all import and include statements for all YANG
-	modules included in a package MUST resolve to a module
-	specified in the package itself, or an imported package.</t>
-	<t>For a given package, each separate instance of the package
-	MUST have a unique version number that follows the semantic
-	versioning rules described in <xref target="versioning"/>.</t>
-	<t>A package MAY have a revision-date.  Any package
-	revision-dates MUST be unique for different package
-	versions.</t>
-	<t>For each module implemented by a package, only a single
-	revision/version MUST be implemented.</t>
-	<t>The version/revision of a module listed in the package
-	module list supercedes any version/revision of the module
-	listed in a imported package module list.  This allows a
-	package to resolve any conflicting implemented module
-	versions/revisions in imported packages.</t>
-	<t>The replaces-revision leaf-list in the import-only-module
-	list can be used to exclude duplicate revisions of import-only
-	modules from imported packages.  Otherwise, the
-	import-only-modules for a package are the import-only-modules
-	from all imported packages combined with any modules listed in
-	the packages import-only-module list.</t>
-
-	<t>Modules referenced by a package SHOULD specify the version
-	of the module, both in the package definition and within the
-	module definition itself.</t>
-	<t>Modules referenced by a package MUST specify the revision
-	date of the module, both in the package definition and within
-	the module definition itself.</t>
+	  <t>A YANG package MAY represent a complete YANG schema or only part of
+	  a YANG schema with some module import dependencies missing, as
+	  described in <xref target="completeness"/>.</t>
+	  <t>For a given package, each separate instance of the package MUST
+	  have a unique version number that follows the versioning rules
+	  described in <xref target="versioning"/>.</t>
+          <t>Packages definitions are hierarchical.  A package can import
+          versions of other packages.  Only a single version of a package can be
+          imported, and conflicting package imports (e.g. from decendent package
+          imports) MUST be explicitly resolved by indicating which version takes
+          precedence, and which versions are being replaced.</t>
+	  <t>For each module implemented by a package, only a single revision of
+	  that module MUST be implemented.  Multiple revisions of a module CAN
+	  be listed as import-only dependencies.  TODO - Is it allowed for a
+	  module to be both 'implemented' and 'import-only'?</t>
+	  <t>The revision of a module listed in the package module list
+	  supercedes any revision of the module listed in a imported package
+	  module list.  This allows a package to resolve conflicts between
+	  implemented module revisions in imported packages.</t>
+	  <t>The replaces-revision leaf-list in the import-only-module list can
+	  be used to exclude duplicate revisions of import-only modules from
+	  imported packages.  Otherwise, the import-only-modules for a package
+	  are the import-only-modules from all imported packages combined with
+	  any modules listed in the packages import-only-module list.</t>
 	</list>
 	</t>
     </section>
     <section anchor="versioning" title="Package versioning">
-      <t>Individual revisions of a YANG packages are versioned using
+      <t>Individual versions of a YANG packages are versioned using
       the "revision-label" scheme defined in section 3.3 of <xref
       target="I-D.verdt-netmod-yang-module-versioning"/>.</t>
 
@@ -303,12 +278,12 @@
 	  <t>Any of the following changes constitute an NBC package version
 	  change to the package definition:
 	  <list>
-	    <t>Changing a package import to import a version that is
-	    non-backwards-compatible to the prior package version, or
-	    removing a previously imported package.</t>
-	    <t>Changing a module import to import a revision that is
-	    non-backwards-compatible to the prior module revision, or
-	    removing a previously implemented module.</t>
+	    <t>Changing a package import to select a package version that is
+	    non-backwards-compatible to the prior package version, or removing a
+	    previously imported package.</t>
+	    <t>Changing a module import to select a module revision that is
+	    non-backwards-compatible to the prior module revision, or removing a
+	    previously implemented module.</t>
 	    <t>Removing a previously supported feature.</t>
 	    <t>Adding, changing, or removing a deviation that is considered a
 	    non-backwards-compatible change to the affected data node in the
@@ -320,11 +295,11 @@
 	  <t>Any of the following changes constitute an BC package version
 	  change to the package definition:
 	  <list>
-	    <t>Changing a package import to import a version that is
+	    <t>Changing a package import to select a package version that is
 	    backwards-compatible to the prior package version, or importing a
 	    new package that does not conflict with any existing included
 	    package or module.</t>
-	    <t>Changing a module import to import a revision that is
+	    <t>Changing a module import to select a module revision that is
 	    backwards-compatible to the prior module revision, or including a
 	    new module to the package definition.</t>
 	    <t>Adding a feature to the list of mandatory to support features.</t>
@@ -338,17 +313,19 @@
 	  <t>Any of the following changes constitute an editorial version change
 	  to the package definition:
 	  <list>
-	    <t>Changing a package import to import a version that is classified
-	    as an editorial change relative to the prior package version.</t>
-	    <t>Changing a module import to import a revision that is classified
-	    as an editorial change relative to the prior module revision.</t>
-	    <t>Any change to the metadata associated with a package definition
+	    <t>Changing a package import to select a package version that is
+	    classified as an editorial change relative to the prior package
+	    version.</t>
+	    <t>Changing a module import to select a module revision that is
+	    classified as an editorial change relative to the prior module
+	    revision.</t>
+	    <t>Any change to any metadata associated with a package definition
 	    that causes it to have a different checksum value.</t>
 	  </list>
 	  </t>
 	</section>
       </section>
-      <section anchor="semantic_versioning" title="Using YANG Semantic Versioning for Packages">
+      <section anchor="semantic_versioning" title="YANG Semantic Versioning for packages">
 	<t>YANG Semantic Versioning, XXX ref, MAY be used as an appropriate type
 	of revision-label for the package version leaf.</t>
 
@@ -369,6 +346,14 @@
 	referenced elements in the package (imported packages or modules) can be
 	used to help determine the scope of changes being made.
       </t>
+      </section>
+      <section title="Revision history">
+        <t>YANG packages do not contain a revision history.  This is because
+        packages may have many revisions and a long revision history would bloat
+        the package definition.  By recursively examining the 'previous-version'
+        leaf of a package definition, a full revision history (including where
+        non-backwards-compatible changes have occurred) can be dynamically
+        constructed, if all package versions are available.</t>
       </section>
     </section>
     <section title="Client server package conformance">
@@ -414,62 +399,53 @@
 	level packages associated with the datastore schema.</t>
       </section>
     </section>
-    <section title="Schema referential completeness">
-      <t>A YANG package may represent a schema that is 'referentially
-      complete', or 'referentially incomplete'.</t>
-      <t>If all import statements in all YANG modules included in the
-      package (either directly, or through imported packages) can be
-      resolved to a module revision defined with the YANG package
-      definition, then the package is classified as referentially
-      complete.  Conversely, if one or more import statements cannot
-      be resolved to a module specified as part of the package
-      definition, then the package is classified as referentially
+    <section anchor="completeness" title="Schema referential completeness">
+      <t>A YANG package may represent a schema that is 'referentially complete',
+      or 'referentially incomplete', indicated in the package definition by the
+      'complete' flag.</t>
+      <t>If all import statements in all YANG modules included in the package
+      (either directly, or through imported packages) can be resolved to a
+      module revision defined with the YANG package definition, then the package
+      is classified as referentially complete.  Conversely, if one or more
+      import statements cannot be resolved to a module specified as part of the
+      package definition, then the package is classified as referentially
       incomplete.</t>
-      <t>A package that represents the exact contents of a datastore
-      schema MUST always be referentially complete.</t>
-      <t>Referentially incomplete packages can be used to group sets
-      of logically related modules together, but without requiring a
-      fixed dependency on all imported 'types' modules, instead
-      leaving the choice of specific revisions of 'types' modules to
-      be resolved when the package definition is used.</t>
+      <t>A package that represents the exact contents of a datastore schema MUST
+      always be referentially complete.</t>
+      <t>Referentially incomplete packages can be used to group sets of
+      logically related modules together, but without requiring a fixed
+      dependency on all imported 'types' modules, instead leaving the choice of
+      specific revisions of 'types' modules to be resolved when the package
+      definition is used.</t>
+    </section>
+    <section title="Package name scoping and uniqueness">
+      <t>YANG package names can be globally unique, or locally scoped to a
+      particular server.</t>
+      <section title="Globally scoped packages">
+        <t>The name given to a package SHOULD be globally unique, and it SHOULD
+        include an appropriate organization prefix in the name, equivalent to
+        YANG module naming conventions.</t>
+        <t>Ideally a YANG instance data document defining a particular package
+        version would be publically available at one or more URLs.</t>
+      </section>
+      <section title="Server scoped packages">
+        <t>Package definitions may be scoped to a particular server by setting
+        the 'is-local' leaf to true in the package definition.</t>
+        <t>Locally scoped packages MAY have a package name that is not globally
+        unique.</t>
+        <t>Locally scoped packages MAY not have a package definition that is
+        available offline from the server.</t>
+      </section>
     </section>
     <section title="Submodules packaging considerations">
       <t>As defined in <xref target="RFC7950"/> and
-      draft-verdt-netmod-yang-semver (TBD), YANG conformance and
-      versioning is specified in terms of particular revisions of YANG
-      modules rather than for individual submodules.</t>
-      <t>However, YANG package definitions also include the list of
-      submodules included by a module, primarily to provide a location
-      of where the submodule definition can be obtained from, allowing
-      a YANG schema to be fully constructed from a YANG package
-      instance-data definition.</t>
-    </section>
-    <section title="Revision history">
-      <t>YANG packages do not contain a revision history, because they may have
-      many revisions, and a long revision history would bloat the package
-      definition.  To mitigate this, the package definition includes a
-      'previous-version' leaf that indicates the specific version this package
-      definition is based on.  By recursively examining the 'previous-version'
-      leaf of a package definition, a full revision history (including where
-      non-backwards-compatible changes have occurred) can be dynamically
-      constructed if required, and if all package versions are available.</t>
-    </section>
-    <section title="Uniqueness of packages and global registry">
-      <t>The name given to a package that is available offline from the server
-      SHOULD be globally unique, and it SHOULD include an appropriate
-      organization prefix in the name, equivalent to YANG module naming
-      conventions.</t>
-      
-      <t>Ideally a YANG instance data document defining a particular package
-      version would be publically available at one or more URLs.</t>
-
-      <section title="Local packages">
-      <t>Package definitions on a server MAY be defined as a local package
-      definition by setting the 'is-local' leaf to true. This means that the
-      package definitions is local to the device, MAY have a package name that
-      is not unique, and MAY not have a package definition this is available
-      offline from the server.</t>
-      </section>
+      draft-verdt-netmod-yang-semver (TBD), YANG conformance and versioning is
+      specified in terms of particular revisions of YANG modules rather than for
+      individual submodules.</t>
+      <t>However, YANG package definitions also include the list of submodules
+      included by a module, primarily to provide a location of where the
+      submodule definition can be obtained from, allowing a YANG schema to be
+      fully constructed from a YANG package instance-data definition.</t>
     </section>
   </section>
   
@@ -492,19 +468,20 @@
 module: ietf-yang-package
 
   structure package:
-    +-- name                      yang:yang-identifier
-    +-- version                   rev:revision-label
-    +-- timestamp?                yang:date-and-time
-    +-- organization?             string
-    +-- contact?                  string
-    +-- description?              string
-    +-- reference?                string
-    +-- referentially-complete?   boolean
-    +-- is-local?                 boolean
-    +-- previous-version?         rev:revision-label
-    +-- nbc-changes?              boolean
-    +-- tag*                      tags:tag
-    +-- supported-feature*        scoped-feature
+    +-- name                  yang:yang-identifier
+    +-- version               rev:revision-label
+    +-- timestamp?            yang:date-and-time
+    +-- organization?         string
+    +-- contact?              string
+    +-- description?          string
+    +-- reference?            string
+    +-- location*             inet:uri
+    +-- complete?             boolean
+    +-- local?                boolean
+    +-- previous-version?     rev:revision-label
+    +-- nbc-changes?          boolean
+    +-- tag*                  tag
+    +-- supported-feature*    scoped-feature
     +-- imported-packages* [name version]
     |  +-- name                yang:yang-identifier
     |  +-- version             rev:revision-label
@@ -520,7 +497,7 @@ module: ietf-yang-package
     |  +-- checksum?    pkg-types:sha-256-hash
     |  +-- submodule* [name]
     |     +-- name        yang:yang-identifier
-    |     +-- revision    yanglib:revision-identifier
+    |     +-- revision    rev:revision-identifier
     |     +-- location*   inet:uri
     |     +-- checksum?   pkg-types:sha-256-hash
     +-- import-only-module* [name revision]
@@ -532,7 +509,7 @@ module: ietf-yang-package
        +-- checksum?            pkg-types:sha-256-hash
        +-- submodule* [name]
           +-- name        yang:yang-identifier
-          +-- revision    yanglib:revision-identifier
+          +-- revision    rev:revision-identifier
           +-- location*   inet:uri
           +-- checksum?   pkg-types:sha-256-hash
           ]]>
@@ -590,19 +567,20 @@ module: ietf-yang-package
 module: ietf-yl-packages
   augment /yanglib:yang-library:
     +--ro package* [name version]
-       +--ro name                      yang:yang-identifier
-       +--ro version                   rev:revision-label
-       +--ro timestamp?                yang:date-and-time
-       +--ro organization?             string
-       +--ro contact?                  string
-       +--ro description?              string
-       +--ro reference?                string
-       +--ro referentially-complete?   boolean
-       +--ro is-local?                 boolean
-       +--ro previous-version?         rev:revision-label
-       +--ro nbc-changes?              boolean
-       +--ro tag*                      tag
-       +--ro supported-feature*        scoped-feature
+       +--ro name                 yang:yang-identifier
+       +--ro version              rev:revision-label
+       +--ro timestamp?           yang:date-and-time
+       +--ro organization?        string
+       +--ro contact?             string
+       +--ro description?         string
+       +--ro reference?           string
+       +--ro location*            inet:uri
+       +--ro complete?            boolean
+       +--ro local?               boolean
+       +--ro previous-version?    rev:revision-label
+       +--ro nbc-changes?         boolean
+       +--ro tag*                 tag
+       +--ro supported-feature*   scoped-feature
        +--ro imported-packages* [name version]
        |  +--ro name                yang:yang-identifier
        |  +--ro version             rev:revision-label
@@ -612,8 +590,7 @@ module: ietf-yl-packages
        |  +--ro checksum?           pkg-types:sha-256-hash
        +--ro module-set*
        |       -> /yanglib:yang-library/module-set/name
-       +--ro location*                 inet:uri
-       +--ro checksum?                 pkg-types:sha-256-hash
+       +--ro checksum?            pkg-types:sha-256-hash
   augment /yanglib:yang-library/yanglib:schema:
     +--ro package
        +--ro name?
@@ -654,17 +631,18 @@ module: ietf-yang-package-types
     +-- name       yang:yang-identifier
     +-- version    rev:revision-label
   grouping yang-pkg-common-leafs
-    +-- timestamp?                yang:date-and-time
-    +-- organization?             string
-    +-- contact?                  string
-    +-- description?              string
-    +-- reference?                string
-    +-- referentially-complete?   boolean
-    +-- is-local?                 boolean
-    +-- previous-version?         rev:revision-label
-    +-- nbc-changes?              boolean
-    +-- tag*                      tag
-    +-- supported-feature*        scoped-feature
+    +-- timestamp?           yang:date-and-time
+    +-- organization?        string
+    +-- contact?             string
+    +-- description?         string
+    +-- reference?           string
+    +-- location*            inet:uri
+    +-- complete?            boolean
+    +-- local?               boolean
+    +-- previous-version?    rev:revision-label
+    +-- nbc-changes?         boolean
+    +-- tag*                 tag
+    +-- supported-feature*   scoped-feature
     +-- imported-packages* [name version]
        +-- name                yang:yang-identifier
        +-- version             rev:revision-label
@@ -672,75 +650,6 @@ module: ietf-yang-package-types
        +-- modified?           boolean
        +-- location*           inet:uri
        +-- checksum?           pkg-types:sha-256-hash
-  grouping yang-pkg-file-definition
-    +-- name                      yang:yang-identifier
-    +-- version                   rev:revision-label
-    +-- timestamp?                yang:date-and-time
-    +-- organization?             string
-    +-- contact?                  string
-    +-- description?              string
-    +-- reference?                string
-    +-- referentially-complete?   boolean
-    +-- is-local?                 boolean
-    +-- previous-version?         rev:revision-label
-    +-- nbc-changes?              boolean
-    +-- tag*                      tag
-    +-- supported-feature*        scoped-feature
-    +-- imported-packages* [name version]
-    |  +-- name                yang:yang-identifier
-    |  +-- version             rev:revision-label
-    |  +-- replaces-version*   rev:revision-label
-    |  +-- modified?           boolean
-    |  +-- location*           inet:uri
-    |  +-- checksum?           pkg-types:sha-256-hash
-    +-- module* [name]
-    |  +-- name         yang:yang-identifier
-    |  +-- revision?    rev:revision-date-or-label
-    |  +-- namespace?   inet:uri
-    |  +-- location*    inet:uri
-    |  +-- checksum?    pkg-types:sha-256-hash
-    |  +-- submodule* [name]
-    |     +-- name?       yang:yang-identifier
-    |     +-- revision    yanglib:revision-identifier
-    |     +-- location*   inet:uri
-    |     +-- checksum?   pkg-types:sha-256-hash
-    +-- import-only-module* [name revision]
-       +-- name?                yang:yang-identifier
-       +-- revision?            rev:revision-date-or-label
-       +-- replaces-revision*   rev:revision-date-or-label
-       +-- namespace?           inet:uri
-       +-- location*            inet:uri
-       +-- checksum?            pkg-types:sha-256-hash
-       +-- submodule* [name]
-          +-- name?       yang:yang-identifier
-          +-- revision    yanglib:revision-identifier
-          +-- location*   inet:uri
-          +-- checksum?   pkg-types:sha-256-hash
-  grouping yang-pkg-library-definition
-    +-- name                      yang:yang-identifier
-    +-- version                   rev:revision-label
-    +-- timestamp?                yang:date-and-time
-    +-- organization?             string
-    +-- contact?                  string
-    +-- description?              string
-    +-- reference?                string
-    +-- referentially-complete?   boolean
-    +-- is-local?                 boolean
-    +-- previous-version?         rev:revision-label
-    +-- nbc-changes?              boolean
-    +-- tag*                      tag
-    +-- supported-feature*        scoped-feature
-    +-- imported-packages* [name version]
-    |  +-- name                yang:yang-identifier
-    |  +-- version             rev:revision-label
-    |  +-- replaces-version*   rev:revision-label
-    |  +-- modified?           boolean
-    |  +-- location*           inet:uri
-    |  +-- checksum?           pkg-types:sha-256-hash
-    +-- module-set*
-    |       -> /yanglib:yang-library/module-set/name
-    +-- location*                 inet:uri
-    +-- checksum?                 pkg-types:sha-256-hash
           ]]>
         </artwork>
       </figure>
@@ -764,23 +673,13 @@ module ietf-yang-package-types {
 
   import ietf-yang-types {
     prefix yang;
+    rev:revision-or-derived 2013-07-15;
     reference "RFC 6991: Common YANG Data Types.";
   }
 
   import ietf-inet-types {
     prefix inet;
     reference "RFC 6991: Common YANG Data Types.";
-  }
-
-  import ietf-yang-library {
-    prefix yanglib;
-    reference "RFC 8525: YANG Library";
-  }
-
-  import ietf-module-tags {
-    prefix tags;
-    reference
-      "XXX, (draft-ietf-netmod-module-tags-03): YANG Module Tags";
   }
 
   organization
@@ -828,6 +727,7 @@ module ietf-yang-package-types {
       "RFC XXXX: YANG Packages.";
   }
 
+  
   /*
    * Typedefs
    */
@@ -845,6 +745,28 @@ module ietf-yang-package-types {
       "RFC XXXX, YANG Packages.";
   }
 
+  typedef tag {
+    type string {
+      length "1..max";
+      pattern '[\S ]+';
+    }
+    description
+      "A package tag is a type 'string' value that does not include
+       carriage return, newline or tab characters. It SHOULD begin
+       with a registered prefix; however, tags without a registered
+       prefix SHOULD NOT be treated as invalid.";
+  }
+
+  typedef sha-256-hash {
+    type string {
+      length "64..64";
+      pattern "[0-9a-fA-F]*";
+    }
+    description 
+      "The SHA-256 hash represented as a hexadecimal string.";
+  }
+
+  
   /*
    * Groupings
    */
@@ -911,7 +833,21 @@ module ietf-yang-package-types {
       description "Allows for a reference for the package";
     }
 
-    leaf referentially-complete {
+    leaf-list location {
+      type inet:uri;
+      description
+        "Contains a URL that represents where an instance data file
+         for this YANG package can be found.
+
+         This leaf will only be present if there is a URL
+         available for retrieval of the schema for this entry.
+
+         If multiple locations are provided, then the first location
+         in the leaf-list MUST be the definitive location that
+         uniquely identifies this package";
+    }
+
+    leaf complete {
       type boolean;
       default true;
       description
@@ -921,7 +857,7 @@ module ietf-yang-package-types {
          one of the imported packages.";
     }
 
-    leaf is-local {
+    leaf local {
       type boolean;
       default false;
       description
@@ -952,7 +888,7 @@ module ietf-yang-package-types {
     }
 
     leaf-list tag {
-      type tags:tag;
+      type tag;
       description
         "Tags associated with a YANG package.  Module tags defined in
          XXX, ietf-netmod-module-tags can be used here but with the
@@ -995,9 +931,9 @@ module ietf-yang-package-types {
          explicitly listed in the imported-packages list with the
          'modified' leaf set to true.
 
-         For import-only modules, the replaces-revision leaf-list can
-         be used to select the specific module versions imported by
-         this package.";
+         For import-only modules, the 'replaces-revision' leaf-list
+         can be used to select the specific module versions imported
+         by this package.";
       reference
         "XXX";
 
@@ -1035,25 +971,114 @@ module ietf-yang-package-types {
       }
 
       leaf checksum {
-        type string {
-          length "64..64";
-          pattern "[0-9a-fA-F]*";
-        }
+        type pkg-types:sha-256-hash;
         description 
           "The SHA-256 hash calculated on the textual package
            definition, represented as a hexadecimal string.";
       }
     }
   }
+}
+<CODE ENDS>
+]]>
+        </artwork>
+      </figure>
+      <figure>
+        <artwork>
+          <![CDATA[
+<CODE BEGINS> file "ietf-yang-package@2019-09-11.yang"
+module ietf-yang-package {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-yang-package";
+  prefix pkg;
+  
+  import ietf-yang-revisions {
+    prefix rev;
+    reference "XXXX: Updated YANG Module Revision Handling";
+  }
 
-  grouping yang-pkg-file-definition {
+  import ietf-yang-package-types {
+    prefix pkg-types;
+    rev:revision-or-derived 0.1.0;
+    reference "RFC XXX: YANG Schema Versioning.";
+  }
+
+  import ietf-yang-structure-ext {
+    prefix sx;
+    reference "RFC XXX: YANG Data Structure Exensions.";
+  }
+
+  import ietf-yang-types {
+    prefix yang;
+    rev:revision-or-derived 2013-07-15;
+    reference "RFC 6991: Common YANG Data Types.";
+  }
+
+  import ietf-inet-types {
+    prefix inet;
+    reference "RFC 6991: Common YANG Data Types.";
+  }
+
+  organization
+    "IETF NETMOD (Network Modeling) Working Group";
+
+  contact
+    "WG Web:   <http://tools.ietf.org/wg/netmod/>
+     WG List:  <mailto:netmod@ietf.org>
+
+     Author:   Rob Wilton
+               <mailto:rwilton@cisco.com>";
+
+  description
+    "This module provides a definition of a YANG package, which is
+     used as the schema for an YANG instance data document specifying
+     a YANG package.
+
+     Copyright (c) 2019 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject
+     to the license terms contained in, the Simplified BSD License
+     set forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (http://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX; see
+     the RFC itself for full legal notices.
+
+     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+     'MAY', and 'OPTIONAL' in this document are to be interpreted as
+     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+     they appear in all capitals, as shown here.";
+
+  // RFC Ed.: update the date below with the date of RFC publication
+  // and remove this note.
+  // RFC Ed.: replace XXXX with actual RFC number and remove this
+  // note.
+  revision 2019-09-11 {
+    rev:revision-label 0.1.0;
     description
-      "The set of parameters that describe a particular YANG
-       package.";
+      "Initial revision";
+    reference
+      "RFC XXXX: YANG Schema Versioning.";
+  }
 
-    uses yang-pkg-identification-leafs;
-    
-    uses yang-pkg-common-leafs;
+
+  /*
+   * Top-level structure
+   */
+
+  sx:structure package {
+    description
+      "Defines a YANG package.
+
+       Intended to be used to specify YANG packages within an
+       instance data document.";
+
+    uses pkg-types:yang-pkg-identification-leafs;    
+    uses pkg-types:yang-pkg-common-leafs;
 
     list module {
       key "name";
@@ -1090,13 +1115,18 @@ module ietf-yang-package-types {
           "The XML namespace identifier for this module.";
       }
 
-      uses yanglib:location-leaf-list;
+      leaf-list location {
+        type inet:uri;
+        description
+          "Contains a URL that represents the YANG schema resource
+           for this module.
 
+           This leaf will only be present if there is a URL available
+           for retrieval of the schema for this entry.";
+      }
+      
       leaf checksum {
-        type string {
-          length "64..64";
-          pattern "[0-9a-fA-F]*";
-        }
+        type pkg-types:sha-256-hash;
         description 
           "The SHA-256 hash calculated on the textual module
            definition, represented as a hexadecimal string.";
@@ -1114,7 +1144,7 @@ module ietf-yang-package-types {
             "The YANG submodule name.";
         }
         leaf revision {
-          type yanglib:revision-identifier;
+          type rev:revision-identifier;
           mandatory true;
           description
             "The YANG submodule revision date.  If the parent module
@@ -1122,13 +1152,18 @@ module ietf-yang-package-types {
              date then it MUST match this leaf's value.";
         }
 
-        uses yanglib:location-leaf-list;
+        leaf-list location {
+          type inet:uri;
+          description
+            "Contains a URL that represents the YANG schema resource
+             for this submodule.
+
+             This leaf will only be present if there is a URL
+             available for retrieval of the schema for this entry.";
+        }
 
         leaf checksum {
-          type string {
-            length "64..64";
-            pattern "[0-9a-fA-F]*";
-          }
+          type pkg-types:sha-256-hash;
           description 
             "The SHA-256 hash calculated on the textual submodule
              definition, represented as a hexadecimal string.";
@@ -1176,14 +1211,19 @@ module ietf-yang-package-types {
         description
           "The XML namespace identifier for this module.";
       }
+      
+      leaf-list location {
+        type inet:uri;
+        description
+          "Contains a URL that represents the YANG schema resource
+           for this module.
 
-      uses yanglib:location-leaf-list;
+           This leaf will only be present if there is a URL available
+           for retrieval of the schema for this entry.";
+      }
 
       leaf checksum {
-        type string {
-          length "64..64";
-          pattern "[0-9a-fA-F]*";
-        }
+        type pkg-types:sha-256-hash;
         description 
           "The SHA-256 hash calculated on the textual submodule
            definition, represented as a hexadecimal string.";
@@ -1201,7 +1241,7 @@ module ietf-yang-package-types {
             "The YANG submodule name.";
         }
         leaf revision {
-          type yanglib:revision-identifier;
+          type rev:revision-identifier;
           mandatory true;
           description
             "The YANG submodule revision date.  If the parent module
@@ -1209,148 +1249,24 @@ module ietf-yang-package-types {
              date then it MUST match this leaf's value.";
         }
 
-        uses yanglib:location-leaf-list;
+        leaf-list location {
+          type inet:uri;
+          description
+            "Contains a URL that represents the YANG schema resource
+             for this submodule.
+
+             This leaf will only be present if there is a URL
+             available for retrieval of the schema for this entry.";
+        }
 
         leaf checksum {
-          type string {
-            length "64..64";
-            pattern "[0-9a-fA-F]*";
-          }
+          type pkg-types:sha-256-hash;
           description 
             "The SHA-256 hash calculated on the textual submodule
              definition, represented as a hexadecimal string.";
         }
       }
     }
-  }
-
-  grouping yang-pkg-library-definition {
-    description
-      "The set of parameters that describe a particular YANG
-       package.";
-
-    uses yang-pkg-identification-leafs;
-    uses yang-pkg-common-leafs;
-    
-    leaf-list module-set {
-      type leafref {
-        path "/yanglib:yang-library/yanglib:module-set/yanglib:name";
-      }
-      description
-        "Describes any modules in addition to, and replacing, and
-         modules defined in the imported packages.
-
-         If a non import-only module appears in multiple module sets,
-         then the module revision and the associated features and
-         deviations must be identical.";
-    }
-
-    leaf-list location {
-      type inet:uri;
-      description
-        "Contains a URL that represents where an instance data file
-         for this YANG package can be found.
-
-         This leaf will only be present if there is a URL
-         available for retrieval of the schema for this entry.
-
-         If multiple locations are provided, then the first location
-         in the leaf-list MUST be the definitive location that
-         uniquely identifies this package";
-    }
-
-    leaf checksum {
-      type string {
-        length "64..64";
-        pattern "[0-9a-fA-F]*";
-      }
-      description 
-        "The SHA-256 hash calculated on the textual package
-         definition, represented as a hexadecimal string.";
-    }
-  } 
-}
-<CODE ENDS>
-]]>
-        </artwork>
-      </figure>
-      <figure>
-        <artwork>
-          <![CDATA[
-<CODE BEGINS> file "ietf-yang-package@2019-09-11.yang"
-module ietf-yang-package {
-  yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-yang-package";
-  prefix pkg;
-  
-  import ietf-yang-revisions {
-    prefix rev;
-    reference "XXXX: Updated YANG Module Revision Handling";
-  }
-
-  import ietf-yang-package-types {
-    prefix pkg-types;
-    reference "RFC XXX: YANG Schema Versioning.";
-  }
-
-  import ietf-yang-structure-ext {
-    prefix sx;
-    reference "RFC XXX: YANG Data Structure Exensions.";
-  }
-  
-  organization
-    "IETF NETMOD (Network Modeling) Working Group";
-
-  contact
-    "WG Web:   <http://tools.ietf.org/wg/netmod/>
-     WG List:  <mailto:netmod@ietf.org>
-
-     Author:   Rob Wilton
-               <mailto:rwilton@cisco.com>";
-
-  description
-    "This module provides a definition of a YANG package, which is
-     used as the schema for an YANG instance data document specifying
-     a YANG package.
-
-     Copyright (c) 2019 IETF Trust and the persons identified as
-     authors of the code.  All rights reserved.
-
-     Redistribution and use in source and binary forms, with or
-     without modification, is permitted pursuant to, and subject
-     to the license terms contained in, the Simplified BSD License
-     set forth in Section 4.c of the IETF Trust's Legal Provisions
-     Relating to IETF Documents
-     (http://trustee.ietf.org/license-info).
-
-     This version of this YANG module is part of RFC XXXX; see
-     the RFC itself for full legal notices.";
-
-  // RFC Ed.: update the date below with the date of RFC publication
-  // and remove this note.
-  // RFC Ed.: replace XXXX with actual RFC number and remove this
-  // note.
-  revision 2019-09-11 {
-    rev:revision-label 0.1.0;
-    description
-      "Initial revision";
-    reference
-      "RFC XXXX: YANG Schema Versioning.";
-  }
-
-
-  /*
-   * Top-level structure
-   */
-
-  sx:structure package {
-    description
-      "Defines a YANG package.
-
-       Intended to be used to specify YANG packages within an
-       instance data document.";
-
-    uses pkg-types:yang-pkg-file-definition;
   }
 }
 <CODE ENDS>
@@ -1420,10 +1336,11 @@ module ietf-yl-packages {
       "RFC XXXX: YANG Schema Versioning.";
   }
 
-
+  
   /*
-   * Add the list of packages into YANG libary.
+   * Augmentations
    */
+  
   augment "/yanglib:yang-library" {
     description "Add YANG package definitions into YANG library";
     
@@ -1433,13 +1350,32 @@ module ietf-yl-packages {
 
       description "Defines the packages available on this server.";
 
-      uses "pkg-types:yang-pkg-library-definition";
+      uses pkg-types:yang-pkg-identification-leafs;
+      uses pkg-types:yang-pkg-common-leafs;
+    
+      leaf-list module-set {
+        type leafref {
+          path "/yanglib:yang-library/yanglib:module-set/" +
+               "yanglib:name";
+        }
+        description
+          "Describes any modules in addition to, and replacing, and
+           modules defined in the imported packages.
+
+           If a non import-only module appears in multiple module
+           sets, then the module revision and the associated features
+           and deviations must be identical.";
+      }
+
+      leaf checksum {
+        type pkg-types:sha-256-hash;
+        description 
+          "The SHA-256 hash calculated on the textual package
+           definition, represented as a hexadecimal string.";
+      }
     }
   }
 
-  /*
-   * Allow schema to be related to a YANG package.
-   */
   augment "/yanglib:yang-library/yanglib:schema" {
     description
       "Allow datastore schema to be related to a YANG package";
@@ -1472,7 +1408,7 @@ module ietf-yl-packages {
             convenience to clients to avoid having to query the full
             YANG library information.
 
-            Features are identified using 
+            Features are identified using
             '<module-name>:<feature-name>'";
        }
        
@@ -1482,17 +1418,41 @@ module ietf-yl-packages {
     }
   }
 
-  /*
-   * Allow import-only modules to list the versions that they are
-   * replacing.
-   */
-    
-  augment
-    "/yanglib:yang-library/yanglib:module-set/" +
-    "yanglib:import-only-module" {
+  augment "/yanglib:yang-library/yanglib:module-set/yanglib:module" {
 
     description
-      "Add replaces-revision to import-only-module definitions";
+      "Add 'checksum' to implemented module definitions.";
+
+    leaf checksum {
+      type pkg-types:sha-256-hash;
+      description 
+        "The SHA-256 hash calculated on the textual module
+         definition, represented as a hexadecimal string.";
+    }
+  }
+
+  augment
+    "/yanglib:yang-library/yanglib:module-set/" +
+    "yanglib:module/yanglib:submodule" {
+
+    description
+      "Add 'checksum' to implemented modules' submodule 
+       definitions.";
+
+    leaf checksum {
+      type pkg-types:sha-256-hash;
+      description 
+        "The SHA-256 hash calculated on the textual submodule
+         definition, represented as a hexadecimal string.";
+    }
+  }
+
+  augment "/yanglib:yang-library/yanglib:module-set/" +
+          "yanglib:import-only-module" {
+
+    description
+      "Add 'replaces-revision' and 'checksum' to import-only-module
+       definitions";
 
     leaf-list replaces-revision {
       type rev:revision-date-or-label;
@@ -1502,6 +1462,28 @@ module ietf-yl-packages {
          revision.
 
          Only used for YANG package definitions";
+    }
+
+    leaf checksum {
+      type pkg-types:sha-256-hash;
+      description 
+        "The SHA-256 hash calculated on the textual module
+         definition, represented as a hexadecimal string.";
+    }
+  }
+
+  augment "/yanglib:yang-library/yanglib:module-set/" +
+          "yanglib:import-only-module/yanglib:submodule" {
+
+    description
+      "Add 'checksum' to import-only-modules' submodule
+       definitions.";
+
+    leaf checksum {
+      type pkg-types:sha-256-hash;
+      description 
+        "The SHA-256 hash calculated on the textual submodule
+         definition, represented as a hexadecimal string.";
     }
   }
 }
@@ -1589,6 +1571,7 @@ module ietf-yl-packages {
       <?rfc include="reference.RFC.8040"?>
       <?rfc include="reference.RFC.8174"?>
       <?rfc include="reference.RFC.8342"?>
+      <?rfc include="reference.RFC.8525"?>
       <?rfc include="reference.I-D.verdt-netmod-yang-versioning-reqs"?>
       <?rfc include="reference.I-D.verdt-netmod-yang-module-versioning"?>
       <?rfc include="reference.I-D.wilton-netmod-yang-ver-selection"?>
@@ -1597,6 +1580,7 @@ module ietf-yl-packages {
       <?rfc include="reference.I-D.ietf-netmod-yang-instance-file-format"?>     
       <?rfc include="reference.I-D.ietf-netmod-module-tags"?>
       <?rfc include="reference.I-D.ietf-netmod-yang-data-ext"?>
+      <?rfc include="reference.I-D.verdt-netmod-yang-semver"?>
     </references>
     <references title="Informative References">
       <?rfc include="reference.RFC.8199"?>
@@ -1626,23 +1610,26 @@ module: ietf-yang-library
     |  |  |  +--ro namespace    inet:uri
     |  |  |  +--ro location*    inet:uri
     |  |  |  +--ro submodule* [name]
-    |  |  |  |  +--ro name        yang:yang-identifier
-    |  |  |  |  +--ro revision?   revision-identifier
-    |  |  |  |  +--ro location*   inet:uri
+    |  |  |  |  +--ro name           yang:yang-identifier
+    |  |  |  |  +--ro revision?      revision-identifier
+    |  |  |  |  +--ro location*      inet:uri
+    |  |  |  |  +--ro pkg:checksum?  pkg-types:sha-256-hash
     |  |  |  +--ro feature*     yang:yang-identifier
     |  |  |  +--ro deviation*   -> ../../module/name
-    |  |  |  +--ro pkg:checksum -> ../../module/name
+    |  |  |  +--ro pkg:checksum?  pkg-types:sha-256-hash
     |  |  +--ro import-only-module* [name revision]
     |  |     +--ro name                     yang:yang-identifier
     |  |     +--ro revision                 union
     |  |     +--ro namespace                inet:uri
     |  |     +--ro location*                inet:uri
     |  |     +--ro submodule* [name]
-    |  |     |  +--ro name        yang:yang-identifier
-    |  |     |  +--ro revision?   revision-identifier
-    |  |     |  +--ro location*   inet:uri
+    |  |     |  +--ro name           yang:yang-identifier
+    |  |     |  +--ro revision?      revision-identifier
+    |  |     |  +--ro location*      inet:uri
+    |  |     |  +--ro pkg:checksum?  pkg-types:sha-256-hash
     |  |     +--ro pkg:replaces-revision*
-    |  |             yanglib:revision-identifier
+    |  |     |       yanglib:revision-identifier
+    |  |     +--ro pkg:checksum?  pkg-types:sha-256-hash
     |  +--ro schema* [name]
     |  |  +--ro name           string
     |  |  +--ro module-set*    -> ../../module-set/name
@@ -1663,7 +1650,8 @@ module: ietf-yang-library
     |     +--ro pkg:contact?                  string
     |     +--ro pkg:description?              string
     |     +--ro pkg:reference?                string
-    |     +--ro pkg:referentially-complete?   boolean
+    |     +--ro pkg:complete?                 boolean
+    |     +--ro pkg:location*                 inet:uri
     |     +--ro pkg:is-local?                 boolean
     |     +--ro pkg:previous-version?         yang-sem-ver
     |     +--ro pkg:nbc-changes?              boolean
@@ -1678,8 +1666,7 @@ module: ietf-yang-library
     |     |  +--ro pkg:checksum?              string
     |     +--ro pkg:module-set*
     |     |       -> /yanglib:yang-library/module-set/name
-    |     +--ro pkg:location*                 inet:uri
-    |     +--ro pkg:checksum?                 string
+    |     +--ro pkg:checksum?                 pkg-types:sha-256-hash
     x--ro modules-state
        x--ro module-set-id    string
        x--ro module* [name revision]
@@ -1749,7 +1736,7 @@ module: ietf-yang-library
         "name": "example-ietf-network-device-pkg",
         "version": "1.1.2",
         "timestamp": "2018-12-13T17:00:00Z",
-        "organization": "IETF",
+        "organization": "IETF NETMOD Working Group",
         "contact" : "WG Web:   <http://tools.ietf.org/wg/netmod/>, \
                      WG List:  <mailto:netmod@ietf.org>",
         "description": "Example IETF network device YANG package.\
@@ -1860,7 +1847,7 @@ module: ietf-yang-library
 	<artwork>
           <![CDATA[
 <CODE BEGINS> file "example-ietf-routing-pkg.json"
-========== NOTE: '\\' line wrapping per BCP XX (RFC XXXX) ===========
+========== NOTE: '\' line wrapping per BCP XX (RFC XXXX) ===========
 
 {
   "ietf-yang-instance-data:instance-data-set": {
@@ -1874,15 +1861,15 @@ module: ietf-yang-library
         "timestamp": "2018-12-13T17:00:00Z",
         "description": "This package defines a small sample set of \
           IETF routing YANG modules that could represent the set of \
-	  IETF routing functionality that a basic IP network device \
-	  might be expected to support.",
+          IETF routing functionality that a basic IP network device \
+          might be expected to support.",
         "reference": "XXX, draft-rwilton-netmod-yang-packages",
         "imported-packages": [
           {
             "name": "ietf-network-device",
             "version": "1.1.2",
             "location": [ "http://example.org/yang/packages/\
-                                 \ietf-network-device@v1.1.2.json" ],
+                                  ietf-network-device@v1.1.2.json" ],
             "checksum": ""
           }
         ],
@@ -1891,63 +1878,63 @@ module: ietf-yang-library
             "name": "ietf-routing",
             "revision": "2018-03-13",
             "location": [ "https://tiny.cc/ietf-yang/\
-                                    \ietf-routing@2018-03-13.yang" ],
+                                     ietf-routing@2018-03-13.yang" ],
             "checksum": ""
           },
           {
             "name": "ietf-ipv4-unicast-routing",
             "revision": "2018-03-13",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \ietf-ipv4-unicast-routing@2018-03-13.yang" ],
+                        ietf-ipv4-unicast-routing@2018-03-13.yang" ],
             "checksum": ""
           },
           {
             "name": "ietf-ipv6-unicast-routing",
             "revision": "2018-03-13",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \ietf-ipv6-unicast-routing@2018-03-13.yang" ],
+                        ietf-ipv6-unicast-routing@2018-03-13.yang" ],
             "checksum": ""
           },
           {
             "name": "ietf-isis",
             "revision": "2018-12-11",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \" ],
+                        " ],
             "checksum": ""
           },
           {
             "name": "ietf-interfaces-common",
             "revision": "2018-07-02",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \" ],
+                        " ],
             "checksum": ""
           },
           {
             "name": "ietf-if-l3-vlan",
             "revision": "2017-10-30",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \" ],
+                        " ],
             "checksum": ""
           },
           {
             "name": "ietf-routing-policy",
             "revision": "2018-10-19",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \" ],
+                        " ],
             "checksum": ""
           },
           {
             "name": "ietf-bgp",
             "revision": "2018-05-09",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \" ],
+                        " ],
             "checksum": ""
           },
           {
             "name": "ietf-access-control-list",
             "revision": "2018-11-06",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \" ],
+                        " ],
             "checksum": ""
           }
         ],
@@ -1956,7 +1943,7 @@ module: ietf-yang-library
             "name": "ietf-routing-types",
             "revision": "2017-12-04",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \" ],
+                        " ],
             "location": [
               "ietf-routing-types@2017-12-04.yang"
             ]
@@ -1966,7 +1953,7 @@ module: ietf-yang-library
             "name": "iana-routing-types",
             "revision": "2017-12-04",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \" ],
+                        " ],
             "location": [
               "iana-routing-types@2017-12-04.yang"
             ]
@@ -1976,21 +1963,21 @@ module: ietf-yang-library
             "name": "ietf-bgp-types",
             "revision": "2018-05-09",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \" ],
+                        " ],
             "checksum": ""
           },
           {
             "name": "ietf-packet-fields",
             "revision": "2018-11-06",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \" ],
+                        " ],
             "checksum": ""
           },
           {
             "name": "ietf-ethertypes",
             "revision": "2018-11-06",
             "location": [ "https://tiny.cc/ietf-yang/\
-                       \" ],
+                        " ],
             "checksum": ""
           }
         ]
