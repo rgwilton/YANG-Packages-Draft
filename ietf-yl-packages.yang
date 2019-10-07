@@ -1,7 +1,7 @@
 module ietf-yl-packages {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-yl-packages";
-  prefix pkg;
+  prefix yl-pkg;
 
   import ietf-yang-revisions {
     prefix rev;
@@ -54,7 +54,7 @@ module ietf-yl-packages {
     description
       "Initial revision";
     reference
-      "RFC XXXX: YANG Schema Versioning.";
+      "RFC XXXX: YANG Packages";
   }
 
   

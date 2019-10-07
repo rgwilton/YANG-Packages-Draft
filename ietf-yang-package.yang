@@ -73,7 +73,7 @@ module ietf-yang-package {
     description
       "Initial revision";
     reference
-      "RFC XXXX: YANG Schema Versioning.";
+      "RFC XXXX: YANG Packages";
   }
 
 
