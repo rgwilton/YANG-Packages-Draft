@@ -107,7 +107,10 @@ module ietf-yl-packages {
            path "/yanglib:yang-library/package/name";
          }
          description
-           "The name of the package this schema relates to.";
+           "The name of the package this schema relates to.
+
+            The referenced package MUST represent a referentially
+            complete schema";
        }
        leaf version {
          type leafref {

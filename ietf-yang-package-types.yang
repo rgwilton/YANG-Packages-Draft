@@ -189,7 +189,7 @@ module ietf-yang-package-types {
       description
         "Indicates whether the schema defined by this package is
          referentially complete.  I.e. all module imports can be
-         resolved to a module explcitly defined in this package or
+         resolved to a module explicitly defined in this package or
          one of the imported packages.";
     }
 
@@ -242,6 +242,9 @@ module ietf-yang-package-types {
          supported by any server implementing the package.  All other
          features defined in included modules are OPTIONAL to
          implement.
+
+         If a feature is listed in the 'supported-feature' list of any
+         included package then it MUST also be included in this list.
 
          Features are identified using <module-name>:<feature-name>";
     }
