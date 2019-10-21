@@ -99,7 +99,17 @@ module ietf-yang-package-types {
       pattern "[0-9a-fA-F]*";
     }
     description 
-      "The SHA-256 hash represented as a hexadecimal string.";
+      "A SHA-256 hash represented as a hexadecimal string.
+
+       Used as the checksum for modules, submodules and packages in a
+       YANG package definition.
+
+       For modules and submodules the SHA-256 hash is calculated on
+       the contents of the YANG file defining the module/submodule.
+
+       For packages the SHA-256 hash is calculated on the file
+       containing the YANG instance data document holding the package
+       definition";
   }
 
   
@@ -190,7 +200,7 @@ module ietf-yang-package-types {
         "Indicates whether the schema defined by this package is
          referentially complete.  I.e. all module imports can be
          resolved to a module explicitly defined in this package or
-         one of the imported packages.";
+         one of the included packages.";
     }
 
     leaf local {
@@ -234,40 +244,42 @@ module ietf-yang-package-types {
          'YANG Module IETF Tag' registry for IETF standard tags.";
     }
 
-    leaf-list supported-feature {
+    leaf-list mandatory-feature {
       type scoped-feature;
       description
-        "List all features from all modules included in the package
-         (either directly, or via other package imports) that MUST be
-         supported by any server implementing the package.  All other
-         features defined in included modules are OPTIONAL to
-         implement.
+        "Lists features from any modules included in the package that
+         MUST be supported by any server implementing the package.
 
-         If a feature is listed in the 'supported-feature' list of any
-         included package then it MUST also be included in this list.
+         Features already specified in a 'mandatory-feature' list of
+         any included package MUST also be supported by server
+         implementations and do not need to be repeated in this list.
+
+         All other features defined in modules included in the
+         package are OPTIONAL to implement.
 
          Features are identified using <module-name>:<feature-name>";
     }
 
-    list imported-packages {
+    list included-package {
       key "name version";
       description
-        "An entry in this list represents a package that is imported
-         as part of the package definition, or an indirectly imported
+        "An entry in this list represents a package that is included
+         as part of the package definition, or an indirectly included
          package that is changed in a non backwards compatible way.
 
-         It is also used to excplictly resolve conflicting package
-         imports from imported packages by choosing which 
+         It can be used to resolve inclusion of conflicting package
+         versions by explicitly specifying which package version is
+         used.
 
-         If imported packages implement different revisions or
+         If included packages implement different revisions or
          versions of the same module, then an explicit entry in the
          module list MUST be provided to select the specific module
          version 'implemented' by this package definition.
 
-         If the schema for any packages that are imported, either
-         directly or indirectly via another package import, are
+         If the schema for any packages that are included, either
+         directly or indirectly via another package include, are
          changed in any non-backwards-compatible way then they MUST
-         be explicitly listed in the imported-packages list with the
+         be explicitly listed in the included-packages list with the
          'nbc-modified' leaf set to true.
 
          For import-only modules, the 'replaces-revision' leaf-list
@@ -281,8 +293,8 @@ module ietf-yang-package-types {
       leaf-list replaces-version {
         type rev:revision-label;
         description
-          "Gives the version of an imported package version that
-           is replaced by this package import revision.";
+          "Gives the version of an included package version that
+           is replaced by this included package revision.";
       }
 
       leaf nbc-modified {
@@ -292,7 +304,10 @@ module ietf-yang-package-types {
           "Set to true if any data nodes in this package are modified
            in a non backwards compatible way, either through the use
            of deviations, or because one of the modules has been
-           replaced by an earlier module version.";
+           replaced by an incompatible revision.  This could also
+           occur if a module's revision was replaced by an earlier
+           revision that had the effect of removing some data
+           nodes.";
       }
 
       leaf-list location {

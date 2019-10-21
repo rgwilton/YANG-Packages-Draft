@@ -85,8 +85,8 @@ module ietf-yang-package {
     description
       "Defines a YANG package.
 
-       Intended to be used to specify YANG packages within an
-       instance data document.";
+       Intended to be used to specify YANG package within an instance
+       data document.";
 
     uses pkg-types:yang-pkg-identification-leafs;    
     uses pkg-types:yang-pkg-common-leafs;
@@ -99,8 +99,10 @@ module ietf-yang-package {
          RFC 7950 section 5.6.5, with a particular set of supported
          features and deviations.
 
-         A entry in this list overrides any module version
-         'implemented' by an imported package";
+         A entry in this list overrides any module revision
+         'implemented' by an included package.  Any replaced module
+         revision SHOULD also be listed in 'replaces' revision'
+         list.";
       reference
         "RFC 7950: The YANG 1.1 Data Modeling Language.";
 
@@ -120,6 +122,14 @@ module ietf-yang-package {
            this leaf is not instantiated.";
       }
 
+      leaf-list replaces-revision {
+        type rev:revision-date-or-label;
+        description
+          "Gives the revision of an module (implemented or
+           import-only) defined in an included package that is
+           replaced by this implemented module revision.";
+      }
+      
       leaf namespace {
         type inet:uri;
         description
@@ -154,6 +164,7 @@ module ietf-yang-package {
           description
             "The YANG submodule name.";
         }
+
         leaf revision {
           type rev:revision-identifier;
           mandatory true;
@@ -212,8 +223,8 @@ module ietf-yang-package {
       leaf-list replaces-revision {
         type rev:revision-date-or-label;
         description
-          "Gives the revision of an import-only-module defined in
-           an imported package that is replaced by this
+          "Gives the revision of an import-only-module defined in an
+           included package that is replaced by this
            import-only-module revision.";
       }
 
@@ -238,7 +249,7 @@ module ietf-yang-package {
         description 
           "The SHA-256 hash calculated on the textual submodule
            definition, represented as a hexadecimal string.";
-        }
+      }
 
       list submodule {
         key "name";
@@ -251,6 +262,7 @@ module ietf-yang-package {
           description
             "The YANG submodule name.";
         }
+        
         leaf revision {
           type rev:revision-identifier;
           mandatory true;

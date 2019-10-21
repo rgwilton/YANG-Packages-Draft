@@ -91,7 +91,7 @@ module ietf-yang-inst-data-pkg {
         leaf checksum {
           type pkg-types:sha-256-hash;
           description 
-            "The SHA-256 hash of the imported package calculated on
+            "The SHA-256 hash of the package, calculated on
              the textual package definition, represented as a
              hexadecimal string.";
         }

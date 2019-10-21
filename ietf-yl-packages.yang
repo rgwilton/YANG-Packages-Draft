@@ -43,8 +43,15 @@ module ietf-yl-packages {
      (http://trustee.ietf.org/license-info).
 
      This version of this YANG module is part of RFC XXXX; see
-     the RFC itself for full legal notices.";
+     the RFC itself for full legal notices.
 
+     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+     'MAY', and 'OPTIONAL' in this document are to be interpreted as
+     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+     they appear in all capitals, as shown here.";
+
+  
   // RFC Ed.: update the date below with the date of RFC publication
   // and remove this note.
   // RFC Ed.: replace XXXX with actual RFC number and remove this
@@ -69,7 +76,8 @@ module ietf-yl-packages {
       key "name version";
       config "false";
 
-      description "Defines the packages available on this server.";
+      description
+        "Defines the package available on this server.";
 
       uses pkg-types:yang-pkg-identification-leafs;
       uses pkg-types:yang-pkg-common-leafs;
@@ -81,11 +89,11 @@ module ietf-yl-packages {
         }
         description
           "Describes any modules in addition to, and replacing, and
-           modules defined in the imported packages.
+           modules defined in the included packages.
 
            If a non import-only module appears in multiple module
            sets, then the module revision and the associated features
-           and deviations must be identical.";
+           and deviations MUST be identical.";
       }
 
       leaf checksum {
@@ -112,6 +120,7 @@ module ietf-yl-packages {
             The referenced package MUST represent a referentially
             complete schema";
        }
+       
        leaf version {
          type leafref {
            path '/yanglib:yang-library/'
@@ -119,18 +128,36 @@ module ietf-yl-packages {
          }
 
          description
-           "The version of the package this schema relates to.";
+           "The version number of the package this schema relates 
+            to.";
        }
-       leaf-list supported-feature {
+       
+       leaf checksum {
+         type pkg-types:sha-256-hash;
+         description 
+           "The checksum of the package this schema relates to,
+            calculated on the 'YANG instance data file' package
+            definition.
+
+            This leaf MAY be ommitted if the referenced package is
+            locally scoped without an associated checksum.";
+       }
+       
+       leaf-list supported-optional-feature {
          type pkg-types:scoped-feature;
          description
-           "Lists all supported features from all supported modules
-            included in the package.
+           "Lists all optional module features that are also
+            supported by the server when implementing the package.
 
-            Reports the same information that is available via the
-            'feature' leaf list in YANG library, and is provided as a
-            convenience to clients to avoid having to query the full
-            YANG library information.
+            This list SHOULD exclude any features in the
+            'mandatory-feature' list for the package, or any included
+            package.
+
+            The full set of features supported by the server for this
+            schema is the union of this list and all
+            'mandatory-feature' lists for the package and all
+            included packages.  This is equivalent to the information
+            provided via the 'feature' leaf list in YANG library.
 
             Features are identified using
             '<module-name>:<feature-name>'";
@@ -145,7 +172,18 @@ module ietf-yl-packages {
   augment "/yanglib:yang-library/yanglib:module-set/yanglib:module" {
 
     description
-      "Add 'checksum' to implemented module definitions.";
+      "Add 'replaced-revision' and 'checksum' to implemented module
+       definitions.";
+
+    leaf-list replaces-revision {
+      type rev:revision-date-or-label;
+      description
+        "Gives the revision of an module (implemented or import-only)
+         defined in an included package that is replaced by this
+         implemented module revision.
+
+         Only used for YANG package definitions";
+    }
 
     leaf checksum {
       type pkg-types:sha-256-hash;
