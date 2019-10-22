@@ -101,7 +101,7 @@ module ietf-yang-package {
 
          A entry in this list overrides any module revision
          'implemented' by an included package.  Any replaced module
-         revision SHOULD also be listed in 'replaces' revision'
+         revision SHOULD also be listed in the 'replaces-revision'
          list.";
       reference
         "RFC 7950: The YANG 1.1 Data Modeling Language.";

@@ -139,7 +139,7 @@ module ietf-yl-packages {
             calculated on the 'YANG instance data file' package
             definition.
 
-            This leaf MAY be ommitted if the referenced package is
+            This leaf MAY be omitted if the referenced package is
             locally scoped without an associated checksum.";
        }
        

@@ -16,7 +16,7 @@ module ietf-yang-inst-data-pkg {
 
   import ietf-yang-structure-ext {
     prefix sx;
-    reference "RFC XXX: YANG Data Structure Exensions.";
+    reference "RFC XXX: YANG Data Structure Extensions.";
   }
 
   import ietf-yang-instance-data {

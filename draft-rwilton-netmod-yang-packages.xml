@@ -255,11 +255,14 @@
 	  <t>For each module implemented by a package, only a single revision of
 	  that module MUST be implemented.  Multiple revisions of a module MAY
 	  be listed as import-only dependencies.</t>
-	  <t>The revision of a module listed in the package module list
-	  supersedes any revision of the module listed in an included package
-	  module list.  This allows a package to resolve conflicts between
-	  implemented module revisions in included packages.</t>
-	  <t>The replaces-revision leaf-list in the import-only-module list can
+	  <t>The revision of a module listed in the package 'module' list
+	  supersedes any 'implemented' revision of the module listed in an
+	  included package module list. The 'replaces-revision' leaf-list is
+	  used to indicate which 'implemented' or 'import-only' module revisions
+	  are replaces by this module revision.  This allows a package to
+	  explicitly resolve conflicts between implemented module revisions in
+	  included packages.</t>
+	  <t>The 'replaces-revision' leaf-list in the 'import-only-module' list can
 	  be used to exclude duplicate revisions of import-only modules from
 	  included packages.  Otherwise, the import-only-modules for a package
 	  are the import-only-modules from all included packages combined with
@@ -847,7 +850,7 @@ module ietf-yang-package-types {
 
   typedef sha-256-hash {
     type string {
-      length "64..64";
+      length "64";
       pattern "[0-9a-fA-F]*";
     }
     description 
@@ -1035,7 +1038,7 @@ module ietf-yang-package-types {
          'nbc-modified' leaf set to true.
 
          For import-only modules, the 'replaces-revision' leaf-list
-         can be used to select the specific module versions imported
+         can be used to select the specific module versions used
          by this package.";
       reference
         "XXX";
@@ -1196,7 +1199,7 @@ module ietf-yang-package {
 
          A entry in this list overrides any module revision
          'implemented' by an included package.  Any replaced module
-         revision SHOULD also be listed in 'replaces' revision'
+         revision SHOULD also be listed in the 'replaces-revision'
          list.";
       reference
         "RFC 7950: The YANG 1.1 Data Modeling Language.";
@@ -1536,7 +1539,7 @@ module ietf-yl-packages {
             calculated on the 'YANG instance data file' package
             definition.
 
-            This leaf MAY be ommitted if the referenced package is
+            This leaf MAY be omitted if the referenced package is
             locally scoped without an associated checksum.";
        }
        
@@ -1672,7 +1675,7 @@ module ietf-yang-inst-data-pkg {
 
   import ietf-yang-structure-ext {
     prefix sx;
-    reference "RFC XXX: YANG Data Structure Exensions.";
+    reference "RFC XXX: YANG Data Structure Extensions.";
   }
 
   import ietf-yang-instance-data {
@@ -1913,7 +1916,7 @@ module ietf-yang-inst-data-pkg {
       <?rfc include="reference.I-D.ietf-netmod-artwork-folding"?>
      <reference anchor="openconfigsemver" target="http://www.openconfig.net/docs/semver/">
      <front>
-      <title>Semantic Versioning for Openconfig Models</title>
+      <title>Semantic Versioning for OpenConfig Models</title>
       <author/>
       <date/>
      </front>
@@ -1941,6 +1944,8 @@ module: ietf-yang-library
     |  |  |  |  +--ro yl-pkg:checksum?  pkg-types:sha-256-hash
     |  |  |  +--ro feature*     yang:yang-identifier
     |  |  |  +--ro deviation*   -> ../../module/name
+    |  |  |  +--ro yl-pkg:replaces-revision*
+    |  |  |  |       yanglib:revision-identifier
     |  |  |  +--ro yl-pkg:checksum?  pkg-types:sha-256-hash
     |  |  +--ro import-only-module* [name revision]
     |  |     +--ro name                     yang:yang-identifier
@@ -1977,21 +1982,21 @@ module: ietf-yang-library
     |     +--ro yl-pkg:reference?                string
     |     +--ro yl-pkg:complete?                 boolean
     |     +--ro yl-pkg:location*                 inet:uri
-    |     +--ro yl-pkg:is-local?                 boolean
+    |     +--ro yl-pkg:local?                    boolean
     |     +--ro yl-pkg:previous-version?         yang-sem-ver
     |     +--ro yl-pkg:nbc-changes?              boolean
     |     +--ro yl-pkg:tag*                      tags:tag
-    |     +--ro yl-pkg:supported-feature*        string
-    |     +--ro yl-pkg:imported-packages* [name version]
+    |     +--ro yl-pkg:mandatory-feature*        string
+    |     +--ro yl-pkg:included-package* [name version]
     |     |  +--ro yl-pkg:name                   yang:yang-identifier
     |     |  +--ro yl-pkg:version                rev:revision-label
     |     |  +--ro yl-pkg:replaces-version*      rev:revision-label
-    |     |  +--ro yl-pkg:modified?              boolean
+    |     |  +--ro yl-pkg:nbc-modified?          boolean
     |     |  +--ro yl-pkg:location*              inet:uri
     |     |  +--ro yl-pkg:checksum?              string
     |     +--ro yl-pkg:module-set*
     |     |       -> /yanglib:yang-library/module-set/name
-    |     +--ro yl-pkg:checksum?                 pkg-types:sha-256-hash
+    |     +--ro yl-pkg:checksum?               pkg-types:sha-256-hash
     x--ro modules-state
        x--ro module-set-id    string
        x--ro module* [name revision]
@@ -2269,20 +2274,14 @@ module: ietf-yang-library
             "name": "ietf-routing-types",
             "revision": "2017-12-04",
             "location": [ "https://tiny.cc/ietf-yang/\
-                        " ],
-            "location": [
-              "ietf-routing-types@2017-12-04.yang"
-            ]
+                        ietf-routing-types@2017-12-04.yang" ],
             "checksum": ""
           },
           {
             "name": "iana-routing-types",
             "revision": "2017-12-04",
             "location": [ "https://tiny.cc/ietf-yang/\
-                        " ],
-            "location": [
-              "iana-routing-types@2017-12-04.yang"
-            ]
+                        iana-routing-types@2017-12-04.yang" ],
             "checksum": ""
           },
           {

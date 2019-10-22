@@ -95,7 +95,7 @@ module ietf-yang-package-types {
 
   typedef sha-256-hash {
     type string {
-      length "64..64";
+      length "64";
       pattern "[0-9a-fA-F]*";
     }
     description 
@@ -283,8 +283,8 @@ module ietf-yang-package-types {
          'nbc-modified' leaf set to true.
 
          For import-only modules, the 'replaces-revision' leaf-list
-         can be used to select the specific module versions imported
-         by this package.";
+         can be used to select the specific module versions used by
+         this package.";
       reference
         "XXX";
 
