@@ -1,7 +1,7 @@
-module ietf-yang-inst-data-pkg {
+module ietf-yang-package-instance {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-yang-inst-data-pkg";
-  prefix yid-pkg;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-yang-package-instance";
+  prefix pkg-inst;
   
   import ietf-yang-revisions {
     prefix rev;
@@ -19,16 +19,6 @@ module ietf-yang-inst-data-pkg {
     reference "RFC XXX: YANG Data Structure Extensions.";
   }
 
-  import ietf-yang-instance-data {
-    prefix yid;
-    reference "RFC XXX: YANG Instance Data File Format.";
-  }
-
-  import ietf-inet-types {
-    prefix inet;
-    reference "RFC 6991: Common YANG Data Types.";
-  }
-
   organization
     "IETF NETMOD (Network Modeling) Working Group";
 
@@ -40,9 +30,9 @@ module ietf-yang-inst-data-pkg {
                <mailto:rwilton@cisco.com>";
 
   description
-    "The module augments ietf-yang-instance-data to allow package
-     definitions to be used to define schema in YANG instance data
-     documents.
+    "This module provides a definition of a YANG package, which is
+     used as the schema for an YANG instance data document specifying
+     a YANG package.
 
      Copyright (c) 2019 IETF Trust and the persons identified as
      authors of the code.  All rights reserved.
@@ -74,42 +64,17 @@ module ietf-yang-inst-data-pkg {
     reference
       "RFC XXXX: YANG Packages";
   }
-  
+
+
   /*
-   * Augmentations
+   * Top-level structure
    */
 
-  sx:augment-structure
-    "/yid:instance-data-set/yid:content-schema-spec" {
+  sx:structure package {
     description
-      "Add package reference to instance data set schema
-       specification";
-    case pkg-schema {
-      container pkg-schema {
-        uses pkg-types:yang-pkg-identification-leafs;
-
-        leaf checksum {
-          type pkg-types:sha-256-hash;
-          description 
-            "The SHA-256 hash of the package, calculated on
-             the textual package definition, represented as a
-             hexadecimal string.";
-        }
-
-        leaf-list location {
-          type inet:uri;
-          description
-            "Contains a URL that represents where an instance data
-             file for this YANG package can be found.
-
-             This leaf will only be present if there is a URL
-             available for retrieval of the schema for this entry.
-
-             If multiple locations are provided, then the first
-             location in the leaf-list MUST be the definitive
-             location that uniquely identifies this package";
-        }
-      }
-    }
+      "Defines the YANG package structure for use in a YANG instance
+       data document.";
+    
+    uses pkg-types:yang-pkg-instance;
   }
 }
