@@ -1,2 +1,3 @@
 # YANG-Packages-Draft
-IETF Individual Draft for possible YANG Package Solution
+
+Please see https://github.com/netmod-wg/yang-ver-dt for the latest version of this document.
